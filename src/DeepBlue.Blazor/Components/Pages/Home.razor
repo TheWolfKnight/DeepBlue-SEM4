@@ -1,7 +1,11 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+@attribute [Route(Shared.Routes.Blazor.Index)]
 
-<h1>Hello, world!</h1>
+<PageTitle>Deep Blue</PageTitle>
 
-Welcome to your new app.
+<h1> Deep Blue </h1>
+
+<div id="board">
+  <Board Set=@Sets.White/>
+</div>

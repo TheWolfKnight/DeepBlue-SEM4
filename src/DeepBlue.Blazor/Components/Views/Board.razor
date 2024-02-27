@@ -1,0 +1,76 @@
+
+@page "/views/board"
+
+@attribute [Route(Shared.Routes.Blazor.Views.BoardView)]
+
+<!-- NOTE: CSS isolation does not work, so using inline -->
+<style>
+
+  div.color-white {
+    background-color: white;
+  }
+
+  div.color-black {
+    background-color: black;
+  }
+
+  div.board-row {
+  }
+
+  div.board-column {
+  }
+
+</style>
+
+<div id="number-column">
+  @foreach (int i in orderdNumbers) {
+    <div class="board-row">@i</div>
+  }
+</div>
+
+<div id="board-gird">
+  @foreach (int i in orderdNumbers) {
+    <div id="row-@i" class="board-row">
+      @foreach (int j in orderdNumbers) {
+        <div id="col-@j" class="board-column color-@(int.IsEvenInteger(j) ? "black" : "white")"/>
+      }
+    </div>
+  }
+</div>
+
+<div id="letter-row">
+  @foreach (char c in orderdLetters) {
+    <div class="board-column">@c</div>
+  }
+</div>
+
+@code {
+
+  //NOTE: these are both seen from whites side, and will be filed if the need to display blacks side
+  //      pops up
+  string orderdLetters = " HGFECDBA";
+  IEnumerable<int> orderdNumbers = [ 8, 7, 6, 5, 4, 3, 2, 1 ];
+
+  [Parameter]
+  public required Sets Set { get; set; }
+
+  protected override async Task OnInitializedAsync()
+  {
+
+    //NOTE: if the player is black, reverse the directions
+    if (Set is Sets.Black)
+    {
+      string letters = orderdLetters.Substring(1);
+      IEnumerable<char> reverseLetters = letters.Reverse();
+
+      orderdLetters = " " + string.Join("", reverseLetters);
+
+      orderdNumbers = orderdNumbers.Reverse();
+    }
+
+    StateHasChanged();
+
+    await base.OnInitializedAsync();
+  }
+
+}

@@ -6,6 +6,8 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.WebHost.UseWebRoot("wwwroot").UseStaticWebAssets();
+
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
