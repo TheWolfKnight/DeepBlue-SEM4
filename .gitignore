@@ -1,0 +1,7 @@
+
+.vs[code]/
+ignore/
+**/*.ignore
+
+**/bin
+**/obj
