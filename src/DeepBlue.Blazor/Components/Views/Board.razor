@@ -7,49 +7,64 @@
 <style>
 
   div.color-white {
-    background-color: white;
+    height: 100px;
+    width: 100px;
+    background-color: #fff;
   }
 
   div.color-black {
-    background-color: black;
+    height: 100px;
+    width: 100px;
+    background-color: #000;
+  }
+
+  div.board-grid {
+    height: 800px;
+    width: 800px;
+    box-sizing: border-box;
+    border: 1px solid #000;
+    margin: 0 auto;
   }
 
   div.board-row {
+    height: 100px;
+    width: 800px;
+    display: flex;
   }
 
-  div.board-column {
+  p.column-letter {
   }
 
 </style>
 
-<div id="number-column">
-  @foreach (int i in orderdNumbers) {
-    <div class="board-row">@i</div>
-  }
-</div>
-
 <div id="board-gird">
-  @foreach (int i in orderdNumbers) {
+  @foreach ((int i, int i_index) in orderedNumbers.Select((n, index) => (n, index)))
+  {
     <div id="row-@i" class="board-row">
-      @foreach (int j in orderdNumbers) {
-        <div id="col-@j" class="board-column color-@(int.IsEvenInteger(j) ? "black" : "white")"/>
+      @foreach ((int j, int j_index) in orderedNumbers.Select((n, index) => (n, index)))
+      {
+        @* NOTE: produces an offset for the board colors                  [             ] *@
+        <div id="col-@j" class="board-column color-@(int.IsEvenInteger(j + (1 * (i % 2))) ? "black" : "white")">
+          @if (j_index == 0)
+          {
+            <p class="row-number" style="color: @(int.IsEvenInteger(j + (1 * (i % 2))) ? "white" : "black");">@i</p>
+          }
+          @if (i_index == orderedNumbers.Count() - 1)
+          {
+            <p class="column-letter" style="color: @(int.IsEvenInteger(j + (1 * (i % 2))) ? "white" : "black");">@letters[8 - j]</p>
+          }
+        </div>
       }
     </div>
   }
 </div>
 
-<div id="letter-row">
-  @foreach (char c in orderdLetters) {
-    <div class="board-column">@c</div>
-  }
-</div>
-
 @code {
 
-  //NOTE: these are both seen from whites side, and will be filed if the need to display blacks side
+  //NOTE: these are both seen from whites side, and will be fliped if the need to display blacks side
   //      pops up
-  string orderdLetters = " HGFECDBA";
-  IEnumerable<int> orderdNumbers = [ 8, 7, 6, 5, 4, 3, 2, 1 ];
+  string letters = "ABCDEFGH";
+  IEnumerable<int> orderedNumbers = [ 8, 7, 6, 5, 4, 3, 2, 1 ];
 
   [Parameter]
   public required Sets Set { get; set; }
@@ -59,14 +74,7 @@
 
     //NOTE: if the player is black, reverse the directions
     if (Set is Sets.Black)
-    {
-      string letters = orderdLetters.Substring(1);
-      IEnumerable<char> reverseLetters = letters.Reverse();
-
-      orderdLetters = " " + string.Join("", reverseLetters);
-
-      orderdNumbers = orderdNumbers.Reverse();
-    }
+      orderedNumbers = orderedNumbers.Reverse();
 
     StateHasChanged();
 
