@@ -41,47 +41,18 @@
 </style>
 
 <div id="board-gird">
-  @foreach ((int i, int i_index) in orderedNumbers.Select((n, index) => (n, index)))
-  {
-    <div id="row-@i" class="board-row">
-      @foreach ((int j, int j_index) in orderedNumbers.Select((n, index) => (n, index)))
-      {
-        @* NOTE: produces an offset for the board colors                  [             ] *@
-        <div id="col-@j" class="board-column color-@(int.IsEvenInteger(j + (1 * (i % 2))) ? "black" : "white")">
-          @if (j_index == 0)
-          {
-            <p class="row-number" style="color: @(int.IsEvenInteger(j + (1 * (i % 2))) ? "white" : "black");">@i</p>
-          }
-          @if (i_index == orderedNumbers.Count() - 1)
-          {
-            <p class="column-letter" style="color: @(int.IsEvenInteger(j + (1 * (i % 2))) ? "white" : "black");">@letters[8 - j]</p>
-          }
-        </div>
-      }
-    </div>
-  }
 </div>
 
 @code {
 
-  //NOTE: these are both seen from whites side, and will be fliped if the need to display blacks side
-  //      pops up
-  string letters = "ABCDEFGH";
-  IEnumerable<int> orderedNumbers = [ 8, 7, 6, 5, 4, 3, 2, 1 ];
+  PieceBase[] BoardPieces = Array.Empty<PieceBase>();
 
   [Parameter]
   public required Sets Set { get; set; }
 
   protected override async Task OnInitializedAsync()
   {
-
-    //NOTE: if the player is black, reverse the directions
-    if (Set is Sets.Black)
-      orderedNumbers = orderedNumbers.Reverse();
-
     StateHasChanged();
-
-    await base.OnInitializedAsync();
   }
 
 }
