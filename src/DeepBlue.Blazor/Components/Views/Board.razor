@@ -41,18 +41,34 @@
 </style>
 
 <div id="board-gird">
+  @for (int y = 0; y < BoardDimensions.Y; ++y)
+  {
+    <div id="row-@y" class="board-row">
+      @for (int x = 0; x < BoardDimensions.X; ++x)
+      {
+        <div id="column-@x" class="board-column @GetCellColor(x, y)"></div>
+      }
+    </div>
+  }
 </div>
 
 @code {
 
-  PieceBase[] BoardPieces = Array.Empty<PieceBase>();
+  PieceBase[,] BoardPieces = new PieceBase[0,0];
+  (int X, int Y) BoardDimensions = (8, 8);
 
   [Parameter]
   public required Sets Set { get; set; }
 
   protected override async Task OnInitializedAsync()
   {
+    BoardPieces = BoardHelpers.GetDefaultBoard(Set);
+
     StateHasChanged();
   }
 
+  string GetCellColor(int x, int y)
+  {
+    throw new NotImplementedException();
+  }
 }
