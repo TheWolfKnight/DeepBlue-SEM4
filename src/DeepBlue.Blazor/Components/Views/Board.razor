@@ -77,10 +77,7 @@
 
   string GetCellColor(int x, int y)
   {
-    bool evenOddX = x % 2 == 0;
-    bool evenOddY = y % 2 == 0;
-    if (!evenOddY)
-      return evenOddX ? "color-white" : "color-black";
-    return evenOddX ? "color-black" : "color-white";
+    //NOTE: all even (index based) cells must be white, all un-even must be black
+    return (x + y) % 2 == 0 ? "color-white" : "color-black";
   }
 }
