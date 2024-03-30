@@ -54,21 +54,33 @@
 
 @code {
 
-  PieceBase[,] BoardPieces = new PieceBase[0,0];
+  IEnumerable<IEnumerable<PieceBase>> BoardPieces = Array.Empty<IEnumerable<PieceBase>>();
   (int X, int Y) BoardDimensions = (8, 8);
 
   [Parameter]
   public required Sets Set { get; set; }
 
+  //NOTE: FEN meaning:                           Board state,whos move,castiling,En passant, Halfmove clock,Fullmove number
+  private readonly string _defaultBoardLayout = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
   protected override async Task OnInitializedAsync()
   {
-    BoardPieces = BoardHelpers.GetDefaultBoard(Set);
+    BoardPieces = BoardHelpers.FENToBoard(_defaultBoardLayout, Set);
 
     StateHasChanged();
   }
 
-  string GetCellColor(int x, int y)
+  string GetPiece(int x, int y)
   {
     throw new NotImplementedException();
+  }
+
+  string GetCellColor(int x, int y)
+  {
+    bool evenOddX = x % 2 == 0;
+    bool evenOddY = y % 2 == 0;
+    if (!evenOddY)
+      return evenOddX ? "color-white" : "color-black";
+    return evenOddX ? "color-black" : "color-white";
   }
 }
