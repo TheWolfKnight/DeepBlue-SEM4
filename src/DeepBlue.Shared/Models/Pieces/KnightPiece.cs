@@ -27,13 +27,25 @@ public class KnightPiece : PieceBase
 
   private readonly Move _attacks;
 
+  public override Move Moves
+  {
+    get => _moves;
+    init => _moves = value;
+  }
+
+  public override Move Attacks
+  {
+    get => _attacks;
+    init => _attacks = value;
+  }
+
   public KnightPiece(Sets set)
   {
     _set = set;
     _attacks = _moves;
   }
 
-  public override bool IsValidMove(Move move)
+  public override MoveResult IsValidMove(Move move)
   {
     throw new NotImplementedException();
   }

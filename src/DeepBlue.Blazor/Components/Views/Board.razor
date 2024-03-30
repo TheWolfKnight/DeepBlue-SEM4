@@ -67,6 +67,9 @@
   {
     BoardPieces = BoardHelpers.FENToBoard(_defaultBoardLayout, Set);
 
+    PawnPiece pawn = new PawnPiece(Set);
+    Move t = pawn.Moves;
+
     StateHasChanged();
   }
 

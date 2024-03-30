@@ -11,8 +11,24 @@ public class EmptyPiece : PieceBase
     init => throw new NotImplementedException("The empty piece should not have a Set");
   }
 
-  public override bool IsValidMove(Move move)
+  public override Move Moves
   {
-    return false;
+    get => throw new NotImplementedException("The empty piece cannot make a move");
+    init => throw new NotImplementedException("The empty piece should not have a moveset");
+  }
+
+  public override Move Attacks
+  {
+    get => throw new NotImplementedException("The empty piece cannot make an attack");
+    init => throw new NotImplementedException("The empty piece should not have an attack pattern");
+  }
+
+  public override MoveResult IsValidMove(Move move)
+  {
+    return new MoveResult
+    {
+      MoveIsValid = false,
+      ValidMove = [],
+    };
   }
 }
