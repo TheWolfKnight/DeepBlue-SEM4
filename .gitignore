@@ -1,5 +1,6 @@
 
-.vs[code]/
+.vs/
+.vscode/
 ignore/
 **/*.ignore
 
