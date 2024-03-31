@@ -9,13 +9,13 @@
   div.color-white {
     height: 100px;
     width: 100px;
-    background-color: #fff;
+    background-color: #FFFFFF;
   }
 
   div.color-black {
     height: 100px;
     width: 100px;
-    background-color: #000;
+    background-color: #B475C2;
   }
 
   div.board-grid {
@@ -32,10 +32,17 @@
     display: flex;
   }
 
-  b.board-columns {
+  button.chess-piece {
+    height: 95%;
+    width: 95%;
+
+    background: none;
+    border: none;
   }
 
-  p.column-letter {
+  button.chess-piece>img {
+    height: 95%;
+    width: 95%;
   }
 
 </style>
@@ -46,7 +53,14 @@
     <div id="row-@y" class="board-row">
       @for (int x = 0; x < BoardDimensions.X; ++x)
       {
-        <div id="column-@x" class="board-column @GetCellColor(x, y)"></div>
+        <div id="column-@x" class="board-column @GetCellColor(x, y)">
+          @if (BoardPieces.ElementAt(y).ElementAt(x) is not EmptyPiece)
+          {
+            <button class=chess-piece @onclick="() => ReadyMove(x,y)">
+              <img src="img/pieces/@GetPieceGraphic(x, y)" />
+            </button>
+          }
+        </div>
       }
     </div>
   }
@@ -73,9 +87,15 @@
     StateHasChanged();
   }
 
-  string GetPiece(int x, int y)
+  void ReadyMove(int x, int y)
   {
     throw new NotImplementedException();
+  }
+
+  string GetPieceGraphic(int x, int y)
+  {
+    PieceBase piece = BoardPieces.ElementAt(y).ElementAt(x);
+    return BoardHelpers.GetPieceString(piece);
   }
 
   string GetCellColor(int x, int y)

@@ -15,14 +15,14 @@ public class KnightPiece : PieceBase
 
   private readonly Move _moves = new Move(new List<List<MoveCommand>>()
   {
-    new(){MoveCommand.UP,MoveCommand.UP,MoveCommand.LEFT},
-    new(){MoveCommand.UP,MoveCommand.UP,MoveCommand.RIGHT},
-    new(){MoveCommand.RIGHT,MoveCommand.RIGHT,MoveCommand.UP},
-    new(){MoveCommand.RIGHT,MoveCommand.RIGHT,MoveCommand.DOWN},
-    new(){MoveCommand.DOWN,MoveCommand.DOWN,MoveCommand.RIGHT},
-    new(){MoveCommand.DOWN,MoveCommand.DOWN,MoveCommand.LEFT},
-    new(){MoveCommand.LEFT,MoveCommand.LEFT,MoveCommand.DOWN},
-    new(){MoveCommand.LEFT,MoveCommand.LEFT,MoveCommand.UP},
+    new(){MoveCommand.UP,MoveCommand.UP,MoveCommand.LEFT, MoveCommand.JUMP},
+    new(){MoveCommand.UP,MoveCommand.UP,MoveCommand.RIGHT, MoveCommand.JUMP},
+    new(){MoveCommand.RIGHT,MoveCommand.RIGHT,MoveCommand.UP, MoveCommand.JUMP},
+    new(){MoveCommand.RIGHT,MoveCommand.RIGHT,MoveCommand.DOWN, MoveCommand.JUMP},
+    new(){MoveCommand.DOWN,MoveCommand.DOWN,MoveCommand.RIGHT, MoveCommand.JUMP},
+    new(){MoveCommand.DOWN,MoveCommand.DOWN,MoveCommand.LEFT, MoveCommand.JUMP},
+    new(){MoveCommand.LEFT,MoveCommand.LEFT,MoveCommand.DOWN, MoveCommand.JUMP},
+    new(){MoveCommand.LEFT,MoveCommand.LEFT,MoveCommand.UP, MoveCommand.JUMP},
   });
 
   private readonly Move _attacks;

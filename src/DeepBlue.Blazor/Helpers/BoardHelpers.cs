@@ -8,6 +8,23 @@ namespace DeepBlue.Blazor.Helpers;
 
 public static class BoardHelpers
 {
+
+  public static string GetPieceString(PieceBase piece)
+  {
+    string result = piece switch
+    {
+      PawnPiece => "pawn_" + GetColor(piece.PieceSet) + ".png",
+      KnightPiece => "knight_" + GetColor(piece.PieceSet) + ".png",
+      RookPiece => "rook_" + GetColor(piece.PieceSet) + ".png",
+      BishopPiece => "bishop_" + GetColor(piece.PieceSet) + ".png",
+      QueenPiece => "queen_" + GetColor(piece.PieceSet) + ".png",
+      KingPiece => "king_" + GetColor(piece.PieceSet) + ".png",
+      _ => "",
+    };
+
+    return result;
+  }
+
   public static IList<IEnumerable<PieceBase>> FENToBoard(string fenString, Sets set)
   {
     string[] notationPieces = fenString.Split(' ');
@@ -43,6 +60,11 @@ public static class BoardHelpers
       result.Reverse();
 
     return result;
+  }
+
+  private static string GetColor(Sets set)
+  {
+    return set is Sets.White ? "white" : "black";
   }
 
   private static List<PieceBase> GetEmptySlots(int num)

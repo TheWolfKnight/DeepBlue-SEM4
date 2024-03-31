@@ -11,4 +11,5 @@ public enum MoveCommand
   //NOTE: Used to repeat a collection of actions, making it easy to
   //      create the rook, bishop, and queen
   REPEATE = 2,
+  JUMP = 3,
 }
