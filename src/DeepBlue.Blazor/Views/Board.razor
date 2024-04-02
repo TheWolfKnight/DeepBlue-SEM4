@@ -57,7 +57,8 @@
         <div id="column-@x" class="board-column @GetCellColor(x, y)">
           @if (GetPiece(x, y) is not EmptyPiece)
           {
-            <button class=chess-piece @onclick="() => { ReadyMove(x, y); }">
+            int tmp_x = x, tmp_y = y;
+            <button class=chess-piece @onclick="() => { ReadyMove(tmp_x, tmp_y); }">
               <img src="img/pieces/@GetPieceGraphic(x, y)"
                    class="@(selectedPiece == GetPiece(x, y) ? "selected" : "")" />
             </button>
