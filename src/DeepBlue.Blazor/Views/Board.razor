@@ -1,5 +1,6 @@
+@page "/board"
 
-@page "/views/board"
+@rendermode RenderMode.InteractiveAuto
 
 @attribute [Route(Shared.Routes.Blazor.Views.BoardView)]
 
@@ -54,10 +55,11 @@
       @for (int x = 0; x < BoardDimensions.X; ++x)
       {
         <div id="column-@x" class="board-column @GetCellColor(x, y)">
-          @if (BoardPieces.ElementAt(y).ElementAt(x) is not EmptyPiece)
+          @if (GetPiece(x, y) is not EmptyPiece)
           {
-            <button class=chess-piece @onclick="() => ReadyMove(x,y)">
-              <img src="img/pieces/@GetPieceGraphic(x, y)" />
+            <button class=chess-piece @onclick="() => { ReadyMove(x, y); }">
+              <img src="img/pieces/@GetPieceGraphic(x, y)"
+                   class="@(selectedPiece == GetPiece(x, y) ? "selected" : "")" />
             </button>
           }
         </div>
@@ -69,6 +71,8 @@
 @code {
 
   IEnumerable<IEnumerable<PieceBase>> BoardPieces = Array.Empty<IEnumerable<PieceBase>>();
+  PieceBase? selectedPiece = null;
+
   (int X, int Y) BoardDimensions = (8, 8);
 
   [Parameter]
@@ -81,20 +85,24 @@
   {
     BoardPieces = BoardHelpers.FENToBoard(_defaultBoardLayout, Set);
 
-    PawnPiece pawn = new PawnPiece(Set);
-    Move t = pawn.Moves;
-
-    StateHasChanged();
+    await InvokeAsync(() => StateHasChanged());
   }
+
+  void Test(int i) => Console.WriteLine(i);
 
   void ReadyMove(int x, int y)
   {
-    throw new NotImplementedException();
+    Console.WriteLine($"{x}, {y}");
+  }
+
+  PieceBase GetPiece(int x, int y)
+  {
+    return BoardPieces.ElementAt(y).ElementAt(x);
   }
 
   string GetPieceGraphic(int x, int y)
   {
-    PieceBase piece = BoardPieces.ElementAt(y).ElementAt(x);
+    PieceBase piece = GetPiece(x, y);
     return BoardHelpers.GetPieceString(piece);
   }
 
