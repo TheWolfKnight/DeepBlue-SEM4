@@ -8,6 +8,12 @@ namespace DeepBlue.Blazor.Helpers;
 public static class BoardHelpers
 {
 
+  public static int[,] GetPieceMoves(PieceBase piece, int x, int y)
+  {
+    throw new NotImplementedException();
+
+  }
+
   public static string GetPieceString(PieceBase piece)
   {
     string result = piece switch

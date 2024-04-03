@@ -19,6 +19,18 @@
     background-color: #B475C2;
   }
 
+  div.color-green {
+    height: 100px;
+    width: 100px;
+    background-color: #11FF11;
+  }
+
+  div.color-red {
+    height: 100px;
+    width: 100px;
+    background-color: #FF1111;
+  }
+
   div.board-grid {
     height: 800px;
     width: 800px;
@@ -58,10 +70,14 @@
           @if (GetPiece(x, y) is not EmptyPiece)
           {
             int tmp_x = x, tmp_y = y;
-            <button class=chess-piece @onclick="() => { ReadyMove(tmp_x, tmp_y); }">
+            <button class="chess-piece" @onclick="() => ReadyMove(tmp_x, tmp_y)">
               <img src="img/pieces/@GetPieceGraphic(x, y)"
                    class="@(selectedPiece == GetPiece(x, y) ? "selected" : "")" />
             </button>
+          }
+          else if (SquareContainsMove(x, y))
+          {
+            int tmp_x = x, tmp_y = y;
           }
         </div>
       }
@@ -72,6 +88,8 @@
 @code {
 
   IEnumerable<IEnumerable<PieceBase>> BoardPieces = Array.Empty<IEnumerable<PieceBase>>();
+  int[,] highlights = new int[8, 8];
+
   PieceBase? selectedPiece = null;
 
   (int X, int Y) BoardDimensions = (8, 8);
@@ -89,11 +107,22 @@
     await InvokeAsync(() => StateHasChanged());
   }
 
-  void Test(int i) => Console.WriteLine(i);
-
-  void ReadyMove(int x, int y)
+  async Task ReadyMove(int x, int y)
   {
-    Console.WriteLine($"{x}, {y}");
+    //NOTE: if you click the same piece, then turn it off
+    if (selectedPiece == GetPiece(x, y)) {
+      selectedPiece = null;
+      highlights = new int[8, 8];
+
+      await InvokeAsync(() => StateHasChanged());
+
+      return;
+    }
+
+    selectedPiece = GetPiece(x, y);
+    highlights = BoardHelpers.GetPieceMoves(selectedPiece, x, y);
+
+    await InvokeAsync(() => StateHasChanged());
   }
 
   PieceBase GetPiece(int x, int y)
@@ -107,8 +136,20 @@
     return BoardHelpers.GetPieceString(piece);
   }
 
+  bool SquareContainsMove(int x, int y)
+  {
+    throw new NotImplementedException();
+  }
+
   string GetCellColor(int x, int y)
   {
+    if (highlights[y,x] is not 0)
+      return highlights[y, x] switch {
+        1 => "color-green",
+        2 => "color-red",
+        _ => throw new Exception("Unreachable code"),
+      };
+
     //NOTE: all even (index based) cells must be white, all un-even must be black
     return (x + y) % 2 == 0 ? "color-white" : "color-black";
   }
