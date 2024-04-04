@@ -66,7 +66,7 @@
     }
 
     selectedPiece = piece;
-    highlights = BoardHelpers.GetPieceMoves(selectedPiece, x, y);
+    highlights = PieceHelpers.GetPieceMoves(piece, x, y);
 
     await InvokeAsync(() => StateHasChanged());
   }

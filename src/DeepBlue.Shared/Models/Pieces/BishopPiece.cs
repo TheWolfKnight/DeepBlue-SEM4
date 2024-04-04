@@ -5,43 +5,43 @@ namespace DeepBlue.Shared.Models.Pieces;
 
 public class BishopPiece : PieceBase
 {
-  private readonly Sets _set;
+    private readonly Sets _set;
 
-  public override Sets PieceSet
-  {
-    get => _set;
-    init => _set = value;
-  }
+    public override Sets PieceSet
+    {
+        get => _set;
+        init => _set = value;
+    }
 
-  public readonly Move _moves = new Move(new List<List<MoveCommand>> {
-      new(){MoveCommand.UP, MoveCommand.RIGHT, MoveCommand.REPEATE},
-      new(){MoveCommand.DOWN,MoveCommand.RIGHT, MoveCommand.REPEATE},
-      new(){MoveCommand.DOWN, MoveCommand.LEFT, MoveCommand.REPEATE},
-      new(){MoveCommand.UP, MoveCommand.LEFT, MoveCommand.REPEATE}
-    });
+    public readonly Move _moves = new Move([
+        [MoveCommand.UP, MoveCommand.RIGHT, MoveCommand.REPEATE],
+        [MoveCommand.DOWN,MoveCommand.RIGHT, MoveCommand.REPEATE],
+        [MoveCommand.DOWN, MoveCommand.LEFT, MoveCommand.REPEATE],
+        [MoveCommand.UP, MoveCommand.LEFT, MoveCommand.REPEATE]
+    ]);
 
-  private readonly Move _attacks;
+    private readonly Move _attacks;
 
-  public override Move Moves
-  {
-    get => _moves;
-    init => _moves = value;
-  }
+    public override Move Moves
+    {
+        get => _moves;
+        init => _moves = value;
+    }
 
-  public override Move Attacks
-  {
-    get => _attacks;
-    init => _attacks = value;
-  }
+    public override Move Attacks
+    {
+        get => _attacks;
+        init => _attacks = value;
+    }
 
-  public BishopPiece(Sets set)
-  {
-    _set = set;
-    _attacks = _moves;
-  }
+    public BishopPiece(Sets set)
+    {
+        _set = set;
+        _attacks = _moves;
+    }
 
-  public override MoveResult IsValidMove(Move move)
-  {
-    throw new NotImplementedException();
-  }
+    public override MoveResult IsValidMove(Move move)
+    {
+        throw new NotImplementedException();
+    }
 }
