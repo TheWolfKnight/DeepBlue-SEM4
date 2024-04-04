@@ -4,62 +4,6 @@
 
 @attribute [Route(Shared.Routes.Blazor.Views.BoardView)]
 
-<!-- NOTE: CSS isolation does not work, so using inline -->
-<style>
-
-  div.color-white {
-    height: 100px;
-    width: 100px;
-    background-color: #FFFFFF;
-  }
-
-  div.color-black {
-    height: 100px;
-    width: 100px;
-    background-color: #B475C2;
-  }
-
-  div.color-green {
-    height: 100px;
-    width: 100px;
-    background-color: #11FF11;
-  }
-
-  div.color-red {
-    height: 100px;
-    width: 100px;
-    background-color: #FF1111;
-  }
-
-  div.board-grid {
-    height: 800px;
-    width: 800px;
-    box-sizing: border-box;
-    border: 1px solid #000;
-    margin: 0 auto;
-  }
-
-  div.board-row {
-    height: 100px;
-    width: 800px;
-    display: flex;
-  }
-
-  button.chess-piece {
-    height: 95%;
-    width: 95%;
-
-    background: none;
-    border: none;
-  }
-
-  button.chess-piece>img {
-    height: 95%;
-    width: 95%;
-  }
-
-</style>
-
 <div id="board-gird">
   @for (int y = 0; y < BoardDimensions.Y; ++y)
   {
@@ -67,18 +11,18 @@
       @for (int x = 0; x < BoardDimensions.X; ++x)
       {
         <div id="column-@x" class="board-column @GetCellColor(x, y)">
-          @if (GetPiece(x, y) is not EmptyPiece)
+          <button @onclick="() => OnSquareClicked(x, y)">
+          @if (BoardPieces.GetPiece(x, y) is not EmptyPiece)
           {
             int tmp_x = x, tmp_y = y;
-            <button class="chess-piece" @onclick="() => ReadyMove(tmp_x, tmp_y)">
               <img src="img/pieces/@GetPieceGraphic(x, y)"
-                   class="@(selectedPiece == GetPiece(x, y) ? "selected" : "")" />
-            </button>
+                   class="chess-piece @(selectedPiece == BoardPieces.GetPiece(x, y) ? "selected" : "")" />
           }
-          else if (SquareContainsMove(x, y))
-          {
-            int tmp_x = x, tmp_y = y;
-          }
+        </button>
+        else if (SquareContainsMove(x, y))
+        {
+          int tmp_x = x, tmp_y = y;
+        }
         </div>
       }
     </div>
@@ -107,10 +51,12 @@
     await InvokeAsync(() => StateHasChanged());
   }
 
-  async Task ReadyMove(int x, int y)
+  async Task OnSquareClicked(int x, int y)
   {
+    PieceBase piece = BoardPieces.GetPiece(x, y);
+
     //NOTE: if you click the same piece, then turn it off
-    if (selectedPiece == GetPiece(x, y)) {
+    if (piece is EmptyPiece || selectedPiece == piece) {
       selectedPiece = null;
       highlights = new int[8, 8];
 
@@ -119,25 +65,21 @@
       return;
     }
 
-    selectedPiece = GetPiece(x, y);
+    selectedPiece = piece;
     highlights = BoardHelpers.GetPieceMoves(selectedPiece, x, y);
 
     await InvokeAsync(() => StateHasChanged());
   }
 
-  PieceBase GetPiece(int x, int y)
-  {
-    return BoardPieces.ElementAt(y).ElementAt(x);
-  }
-
   string GetPieceGraphic(int x, int y)
   {
-    PieceBase piece = GetPiece(x, y);
+    PieceBase piece = BoardPieces.GetPiece(x, y);
     return BoardHelpers.GetPieceString(piece);
   }
 
   bool SquareContainsMove(int x, int y)
   {
+    return false;
     throw new NotImplementedException();
   }
 

@@ -1,0 +1,50 @@
+div.color-white {
+  height: 100px;
+  width: 100px;
+  background-color: #FFFFFF;
+}
+
+div.color-black {
+  height: 100px;
+  width: 100px;
+  background-color: #B475C2;
+}
+
+div.color-green {
+  height: 100px;
+  width: 100px;
+  background-color: #11FF11;
+}
+
+div.color-red {
+  height: 100px;
+  width: 100px;
+  background-color: #FF1111;
+}
+
+div.board-grid {
+  height: 800px;
+  width: 800px;
+  box-sizing: border-box;
+  border: 1px solid #000;
+  margin: 0 auto;
+}
+
+div.board-row {
+  height: 100px;
+  width: 800px;
+  display: flex;
+}
+
+button.chess-piece {
+  height: 95%;
+  width: 95%;
+
+  background: none;
+  border: none;
+}
+
+button.chess-piece>img {
+  height: 95%;
+  width: 95%;
+}
