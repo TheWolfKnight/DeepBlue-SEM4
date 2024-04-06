@@ -1,0 +1,6 @@
+@DeepBlue.Api.GameStorage_HostAddress = http://localhost:5236
+
+GET {{DeepBlue.Api.GameStorage_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
