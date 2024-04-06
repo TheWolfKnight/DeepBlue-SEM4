@@ -5,10 +5,10 @@ namespace DeepBlue.Shared.Models;
 
 public class Move
 {
-  public readonly List<List<MoveCommand>> MoveCommands = new();
+    public readonly MoveCommand[][] MoveCommands = [];
 
-  public Move(List<List<MoveCommand>> validMoves)
-  {
-    MoveCommands = validMoves;
-  }
+    public Move(MoveCommand[][] validMoves)
+    {
+        MoveCommands = validMoves;
+    }
 }
