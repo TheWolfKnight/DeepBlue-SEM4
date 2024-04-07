@@ -22,7 +22,7 @@ div.color-red {
   background-color: #FF1111;
 }
 
-div.board-grid {
+div#board-gird {
   height: 800px;
   width: 800px;
   box-sizing: border-box;
@@ -32,7 +32,7 @@ div.board-grid {
 
 div.board-row {
   height: 100px;
-  width: 800px;
+  width: 100%;
   display: flex;
 }
 

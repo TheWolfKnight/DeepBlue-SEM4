@@ -1,5 +1,6 @@
-
 @page "/savegames"
+
+@rendermode RenderMode.InteractiveAuto
 
 <PageTitle> Save Games </PageTitle>
 
@@ -15,9 +16,16 @@
     </thead>
     <tbody>
       @foreach (GameDisplay game in savedGames)
-        @foreach (PropertyInfo info in typeof(GameDisplay).GetDisplayProperties()) {
+      {
+        var tmp_game = game;
+        @foreach (PropertyInfo info in typeof(GameDisplay).GetDisplayProperties())
         {
-          <td>@info.GetValue(game)</td>
+          <td>@info.GetValue(tmp_game)</td>
+          <td>
+            <button id="load-savegame" @onclick="() => SelectGame(tmp_game)"></button>
+            |
+            <button id="delete-savegame" @onclick="() => DeleteGame(game)"></button>
+          </td>
         }
       }
     </tbody>
@@ -34,11 +42,11 @@
     await InvokeAsync(() => StateHasChanged());
   }
 
-  void SelectGame()
+  void SelectGame(GameDisplay game)
   {
   }
 
-  void DeleteGame()
+  void DeleteGame(GameDisplay game)
   {
   }
 }

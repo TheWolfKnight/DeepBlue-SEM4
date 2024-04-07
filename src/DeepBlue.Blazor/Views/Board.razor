@@ -10,19 +10,15 @@
     <div id="row-@y" class="board-row">
       @for (int x = 0; x < BoardDimensions.X; ++x)
       {
+        int tmp_x = x, tmp_y = y;
         <div id="column-@x" class="board-column @GetCellColor(x, y)">
-          <button @onclick="() => OnSquareClicked(x, y)">
+          <button class="chess-piece" @onclick="() => OnSquareClicked(tmp_x, tmp_y)">
           @if (BoardPieces.GetPiece(x, y) is not EmptyPiece)
           {
-            int tmp_x = x, tmp_y = y;
               <img src="img/pieces/@GetPieceGraphic(x, y)"
                    class="chess-piece @(selectedPiece == BoardPieces.GetPiece(x, y) ? "selected" : "")" />
           }
-        </button>
-        else if (SquareContainsMove(x, y))
-        {
-          int tmp_x = x, tmp_y = y;
-        }
+          </button>
         </div>
       }
     </div>
@@ -30,7 +26,6 @@
 </div>
 
 @code {
-
   IEnumerable<IEnumerable<PieceBase>> BoardPieces = Array.Empty<IEnumerable<PieceBase>>();
   int[,] highlights = new int[8, 8];
 
