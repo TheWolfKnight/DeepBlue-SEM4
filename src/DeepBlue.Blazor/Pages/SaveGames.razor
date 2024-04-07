@@ -1,0 +1,44 @@
+
+@page "/savegames"
+
+<PageTitle> Save Games </PageTitle>
+
+<h1>Your games</h1>
+
+<div id="save-games">
+  <table class="table">
+    <thead>
+      @foreach (PropertyInfo info in typeof(GameDisplay).GetDisplayProperties())
+      {
+        <th>@info.GetDisplayName()</th>
+      }
+    </thead>
+    <tbody>
+      @foreach (GameDisplay game in savedGames)
+        @foreach (PropertyInfo info in typeof(GameDisplay).GetDisplayProperties()) {
+        {
+          <td>@info.GetValue(game)</td>
+        }
+      }
+    </tbody>
+  </table>
+</div>
+
+@code {
+
+  IEnumerable<GameDisplay> savedGames = Array.Empty<GameDisplay>();
+
+  protected override async Task OnInitializedAsync()
+  {
+    //TODO: get the saved games from this cookie
+    await InvokeAsync(() => StateHasChanged());
+  }
+
+  void SelectGame()
+  {
+  }
+
+  void DeleteGame()
+  {
+  }
+}
