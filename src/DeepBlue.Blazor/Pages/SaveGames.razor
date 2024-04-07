@@ -13,6 +13,7 @@
       {
         <th>@info.GetDisplayName()</th>
       }
+      <th>Actions</th>
     </thead>
     <tbody>
       @foreach (GameDisplay game in savedGames)
@@ -21,23 +22,23 @@
         @foreach (PropertyInfo info in typeof(GameDisplay).GetDisplayProperties())
         {
           <td>@info.GetValue(tmp_game)</td>
-          <td>
-            <button id="load-savegame" @onclick="() => SelectGame(tmp_game)"></button>
-            |
-            <button id="delete-savegame" @onclick="() => DeleteGame(game)"></button>
-          </td>
         }
+        <td>
+          <button id="load-savegame" @onclick="() => SelectGame(tmp_game)"></button>
+          |
+          <button id="delete-savegame" @onclick="() => DeleteGame(game)"></button>
+        </td>
       }
     </tbody>
   </table>
 </div>
 
 @code {
-
   IEnumerable<GameDisplay> savedGames = Array.Empty<GameDisplay>();
 
   protected override async Task OnInitializedAsync()
   {
+    savedGames = [ new GameDisplay() ];
     //TODO: get the saved games from this cookie
     await InvokeAsync(() => StateHasChanged());
   }
