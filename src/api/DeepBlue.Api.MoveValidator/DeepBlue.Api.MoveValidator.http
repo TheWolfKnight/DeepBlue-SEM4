@@ -1,6 +1,3 @@
-@DeepBlue.Api.MoveValidator_HostAddress = http://localhost:5261
-
-GET {{DeepBlue.Api.MoveValidator_HostAddress}}/weatherforecast/
-Accept: application/json
+@DeepBlue_Api_MoveValidator_HostAddress = http://localhost:5261
 
 ###
