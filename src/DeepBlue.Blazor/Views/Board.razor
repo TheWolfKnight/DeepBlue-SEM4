@@ -4,6 +4,9 @@
 
 @attribute [Route(Shared.Routes.Blazor.Views.BoardView)]
 
+@inject IPieceService PieceService
+@inject GameState Game
+
 <div id="board-gird">
   @for (int y = 0; y < BoardDimensions.Y; ++y)
   {
@@ -37,11 +40,14 @@
   public required Sets Set { get; set; }
 
   //NOTE: FEN meaning:                           Board state,whos move,castiling,En passant, Halfmove clock,Fullmove number
-  private readonly string _defaultBoardLayout = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+  private string _boardLayout = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
   protected override async Task OnInitializedAsync()
   {
-    BoardPieces = BoardHelpers.FENToBoard(_defaultBoardLayout, Set);
+    if (Game.CurrentFEN is not "")
+      _boardLayout = Game.CurrentFEN;
+
+    BoardPieces = BoardHelpers.FENToBoard(_boardLayout, Set);
 
     await InvokeAsync(() => StateHasChanged());
   }
@@ -61,7 +67,7 @@
     }
 
     selectedPiece = piece;
-    highlights = PieceHelpers.GetPieceMoves(piece, x, y);
+    highlights = PieceService.GetPieceMoves(piece, x, y);
 
     await InvokeAsync(() => StateHasChanged());
   }

@@ -1,0 +1,6 @@
+@DeepBlue.Api.GameDelete_HostAddress = http://localhost:5104
+
+GET {{DeepBlue.Api.GameDelete_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
