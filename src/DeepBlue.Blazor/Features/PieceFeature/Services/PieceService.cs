@@ -1,12 +1,13 @@
 
+using DeepBlue.Blazor.Features.PieceFeature.Services.Interfaces;
 using DeepBlue.Shared.Enums;
 using DeepBlue.Shared.Models;
 
-namespace DeepBlue.Blazor.Helpers;
+namespace DeepBlue.Blazor.Features.PieceFeature.Services;
 
-public static class PieceHelpers
+public class PieceService : IPieceService
 {
-    public static int[,] GetPieceMoves(PieceBase piece, int x, int y)
+    public int[,] GetPieceMoves(PieceBase piece, int x, int y)
     {
         Move pieceMoveSet = piece.Moves;
 
