@@ -8,95 +8,102 @@ namespace DeepBlue.Blazor.Helpers;
 public static class BoardHelpers
 {
 
-    public static string GetPieceString(PieceBase piece)
+  public static string GetPieceString(PieceBase piece)
+  {
+    string result = piece switch
     {
-        string result = piece switch
-        {
-            PawnPiece => "pawn_" + GetColor(piece.PieceSet) + ".png",
-            KnightPiece => "knight_" + GetColor(piece.PieceSet) + ".png",
-            RookPiece => "rook_" + GetColor(piece.PieceSet) + ".png",
-            BishopPiece => "bishop_" + GetColor(piece.PieceSet) + ".png",
-            QueenPiece => "queen_" + GetColor(piece.PieceSet) + ".png",
-            KingPiece => "king_" + GetColor(piece.PieceSet) + ".png",
-            _ => "",
-        };
+      PawnPiece => "pawn_" + GetColor(piece.PieceSet) + ".png",
+      KnightPiece => "knight_" + GetColor(piece.PieceSet) + ".png",
+      RookPiece => "rook_" + GetColor(piece.PieceSet) + ".png",
+      BishopPiece => "bishop_" + GetColor(piece.PieceSet) + ".png",
+      QueenPiece => "queen_" + GetColor(piece.PieceSet) + ".png",
+      KingPiece => "king_" + GetColor(piece.PieceSet) + ".png",
+      _ => "",
+    };
 
-        return result;
-    }
+    return result;
+  }
 
-    public static IList<IEnumerable<PieceBase>> FENToBoard(string fenString, Sets set)
+  public static IList<IEnumerable<PieceBase>> FENToBoard(string fenString, Sets set)
+  {
+    string[] notationPieces = fenString.Split(' ');
+    string[] ranks = notationPieces[0].Split('/');
+
+    List<IEnumerable<PieceBase>> result = new List<IEnumerable<PieceBase>>();
+
+    for (int i = 0; i < ranks.Length; ++i)
     {
-        string[] notationPieces = fenString.Split(' ');
-        string[] ranks = notationPieces[0].Split('/');
+      List<PieceBase> rank = new List<PieceBase>();
 
-        List<IEnumerable<PieceBase>> result = new List<IEnumerable<PieceBase>>();
+      int x = 0;
 
-        for (int i = 0; i < ranks.Length; ++i)
+      for (int j = 0; j < ranks[i].Length; ++j)
+      {
+        char instruction = ranks[i][j];
+
+        if (char.IsDigit(instruction))
         {
-            List<PieceBase> rank = new List<PieceBase>();
-
-            foreach (char instruction in ranks[i])
-            {
-                if (char.IsDigit(instruction))
-                {
-                    int num = int.Parse(instruction.ToString());
-                    IList<PieceBase> emptySlots = GetEmptySlots(num);
-                    rank = rank
-                      .Concat(emptySlots)
-                      .ToList();
-                    continue;
-                }
-
-                PieceBase piece = GetPieceFromChar(instruction);
-                rank.Add(piece);
-            }
-
-            result.Add(rank);
+          int num = int.Parse(instruction.ToString());
+          IList<PieceBase> emptySlots = GetEmptySlots(num);
+          rank = rank
+            .Concat(emptySlots)
+            .ToList();
+          x += num;
+          continue;
         }
 
-        //NOTE: FEN is seen from whites side, so flip if black
-        if (set is Sets.Black)
-            result.Reverse();
+        PieceBase piece = GetPieceFromChar(instruction);
+        piece.Position = [x, i];
+        x++;
+        rank.Add(piece);
+      }
 
-        return result;
+      result.Add(rank);
     }
 
-    private static string GetColor(Sets set)
+    //NOTE: FEN is seen from whites side, so flip if black
+    if (set is Sets.Black)
+      result.Reverse();
+
+    return result;
+  }
+
+  private static string GetColor(Sets set)
+  {
+    return set is Sets.White ? "white" : "black";
+  }
+
+  private static List<PieceBase> GetEmptySlots(int num)
+  {
+    return Enumerable
+      .Range(0, num)
+      .Select(_ => (PieceBase)new EmptyPiece())
+      .ToList();
+  }
+
+  private static PieceBase GetPieceFromChar(char piece)
+  {
+    ConstructorInfo constructor = GetPieceConstructor(piece);
+    Sets set = char.IsUpper(piece) ? Sets.White : Sets.Black;
+    return (PieceBase)constructor.Invoke([set]);
+  }
+
+  private static ConstructorInfo GetPieceConstructor(char piece)
+  {
+    Type type = char.ToLower(piece) switch
     {
-        return set is Sets.White ? "white" : "black";
-    }
+      'p' => typeof(PawnPiece),
+      'r' => typeof(RookPiece),
+      'n' => typeof(KnightPiece),
+      'b' => typeof(BishopPiece),
+      'q' => typeof(QueenPiece),
+      'k' => typeof(KingPiece),
+      _ => throw new Exception("Unrechable Code")
+    };
 
-    private static List<PieceBase> GetEmptySlots(int num)
-    {
-        return Enumerable
-          .Range(0, num)
-          .Select(_ => (PieceBase)new EmptyPiece())
-          .ToList();
-    }
+    ConstructorInfo? constructor = type.GetConstructor([typeof(Sets)])
+      ?? throw new Exception($"A constructor is missing from the piece: {piece}");
 
-    private static PieceBase GetPieceFromChar(char piece)
-    {
-        ConstructorInfo constructor = GetPieceConstructor(piece);
-        Sets set = char.IsUpper(piece) ? Sets.White : Sets.Black;
-        return (PieceBase)constructor.Invoke([set]);
-    }
-
-    private static ConstructorInfo GetPieceConstructor(char piece)
-    {
-        Type type = char.ToLower(piece) switch
-        {
-            'p' => typeof(PawnPiece),
-            'r' => typeof(RookPiece),
-            'n' => typeof(KnightPiece),
-            'b' => typeof(BishopPiece),
-            'q' => typeof(QueenPiece),
-            'k' => typeof(KingPiece),
-            _ => throw new Exception("Unrechable Code")
-        };
-
-        ConstructorInfo? constructor = type.GetConstructor([typeof(Sets)])
-          ?? throw new Exception($"A constructor is missing from the piece: {piece}");
-
-        return constructor;
-    }
+    return constructor;
+  }
 }

@@ -5,47 +5,27 @@ namespace DeepBlue.Shared.Models.Pieces;
 
 public class KnightPiece : PieceBase
 {
-    private readonly Sets _set;
+  private readonly Sets _set;
+  private int[] _position = new int[2];
 
-    public override Sets PieceSet
-    {
-        get => _set;
-        init => _set = value;
-    }
+  public override Sets PieceSet
+  {
+    get => _set;
+    init => _set = value;
+  }
+  public override int[] Position
+  {
+    get => _position;
+    set => _position = value;
+  }
 
-    private readonly Move _moves = new Move([
-        [MoveCommand.UP,MoveCommand.UP,MoveCommand.LEFT, MoveCommand.JUMP],
-        [MoveCommand.UP,MoveCommand.UP,MoveCommand.RIGHT, MoveCommand.JUMP],
-        [MoveCommand.RIGHT,MoveCommand.RIGHT,MoveCommand.UP, MoveCommand.JUMP],
-        [MoveCommand.RIGHT,MoveCommand.RIGHT,MoveCommand.DOWN, MoveCommand.JUMP],
-        [MoveCommand.DOWN,MoveCommand.DOWN,MoveCommand.RIGHT, MoveCommand.JUMP],
-        [MoveCommand.DOWN,MoveCommand.DOWN,MoveCommand.LEFT, MoveCommand.JUMP],
-        [MoveCommand.LEFT,MoveCommand.LEFT,MoveCommand.DOWN, MoveCommand.JUMP],
-        [MoveCommand.LEFT,MoveCommand.LEFT,MoveCommand.UP, MoveCommand.JUMP],
-    ]);
+  public KnightPiece(Sets set)
+  {
+    _set = set;
+  }
 
-    private readonly Move _attacks;
-
-    public override Move Moves
-    {
-        get => _moves;
-        init => _moves = value;
-    }
-
-    public override Move Attacks
-    {
-        get => _attacks;
-        init => _attacks = value;
-    }
-
-    public KnightPiece(Sets set)
-    {
-        _set = set;
-        _attacks = _moves;
-    }
-
-    public override MoveResult IsValidMove(Move move)
-    {
-        throw new NotImplementedException();
-    }
+  public override int[,] GetValidMoves(IEnumerable<IEnumerable<PieceBase>> board)
+  {
+    throw new NotImplementedException();
+  }
 }

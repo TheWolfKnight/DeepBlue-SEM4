@@ -4,7 +4,6 @@
 
 @attribute [Route(Shared.Routes.Blazor.Views.BoardView)]
 
-@inject IPieceService PieceService
 @inject GameState Game
 
 <div id="board-gird">
@@ -30,7 +29,7 @@
 
 @code {
   IEnumerable<IEnumerable<PieceBase>> BoardPieces = Array.Empty<IEnumerable<PieceBase>>();
-  int[,] highlights = new int[8, 8];
+  int[,] highlights = new int[8,8];
 
   PieceBase? selectedPiece = null;
 
@@ -41,6 +40,8 @@
 
   //NOTE: FEN meaning:                           Board state,whos move,castiling,En passant, Halfmove clock,Fullmove number
   private string _boardLayout = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+  private string _test = "8/8/8/3b4/4p3/8/8/8 w KQkq - 0 1";
 
   protected override async Task OnInitializedAsync()
   {
@@ -56,18 +57,10 @@
   {
     PieceBase piece = BoardPieces.GetPiece(x, y);
 
-    //NOTE: if you click the same piece, then turn it off
-    if (piece is EmptyPiece || selectedPiece == piece) {
-      selectedPiece = null;
-      highlights = new int[8, 8];
-
-      await InvokeAsync(() => StateHasChanged());
-
+    if (piece is EmptyPiece)
       return;
-    }
 
-    selectedPiece = piece;
-    highlights = PieceService.GetPieceMoves(piece, x, y);
+    highlights = piece.GetValidMoves(BoardPieces);
 
     await InvokeAsync(() => StateHasChanged());
   }
@@ -86,14 +79,11 @@
 
   string GetCellColor(int x, int y)
   {
-    if (highlights[y,x] is not 0)
-      return highlights[y, x] switch {
-        1 => "color-green",
-        2 => "color-red",
-        _ => throw new Exception("Unreachable code"),
-      };
-
-    //NOTE: all even (index based) cells must be white, all un-even must be black
-    return (x + y) % 2 == 0 ? "color-white" : "color-black";
+    return highlights[y,x] switch {
+      1 => "color-green",
+      2 => "color-red",
+      //NOTE: all even (index based) cells must be white, all un-even must be black
+      _ => (x + y) % 2 == 0 ? "color-white" : "color-black",
+    };
   }
 }

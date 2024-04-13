@@ -11,24 +11,14 @@ public class EmptyPiece : PieceBase
     init => throw new NotImplementedException("The empty piece should not have a Set");
   }
 
-  public override Move Moves
+  public override int[] Position
   {
-    get => throw new NotImplementedException("The empty piece cannot make a move");
-    init => throw new NotImplementedException("The empty piece should not have a moveset");
+    get => throw new NotImplementedException("The empty piece does not have a Position");
+    set => throw new NotImplementedException("The empty piece should not have a Position");
   }
 
-  public override Move Attacks
+  public override int[,] GetValidMoves(IEnumerable<IEnumerable<PieceBase>> board)
   {
-    get => throw new NotImplementedException("The empty piece cannot make an attack");
-    init => throw new NotImplementedException("The empty piece should not have an attack pattern");
-  }
-
-  public override MoveResult IsValidMove(Move move)
-  {
-    return new MoveResult
-    {
-      MoveIsValid = false,
-      ValidMove = [],
-    };
+    return new int[8, 8];
   }
 }

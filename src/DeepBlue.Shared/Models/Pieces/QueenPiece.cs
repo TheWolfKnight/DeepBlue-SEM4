@@ -5,47 +5,27 @@ namespace DeepBlue.Shared.Models.Pieces;
 
 public class QueenPiece : PieceBase
 {
-    private readonly Sets _set;
+  private readonly Sets _set;
+  private int[] _position = new int[2];
 
-    public override Sets PieceSet
-    {
-        get => _set;
-        init => _set = value;
-    }
+  public override Sets PieceSet
+  {
+    get => _set;
+    init => _set = value;
+  }
+  public override int[] Position
+  {
+    get => _position;
+    set => _position = value;
+  }
 
-    private readonly Move _moves = new Move([
-        [MoveCommand.UP, MoveCommand.REPEATE],
-        [MoveCommand.UP, MoveCommand.RIGHT, MoveCommand.REPEATE],
-        [MoveCommand.RIGHT, MoveCommand.REPEATE],
-        [MoveCommand.DOWN,MoveCommand.RIGHT, MoveCommand.REPEATE],
-        [MoveCommand.DOWN, MoveCommand.REPEATE],
-        [MoveCommand.DOWN, MoveCommand.LEFT, MoveCommand.REPEATE],
-        [MoveCommand.LEFT, MoveCommand.REPEATE],
-        [MoveCommand.UP, MoveCommand.LEFT, MoveCommand.REPEATE]
-      ]);
+  public QueenPiece(Sets set)
+  {
+    _set = set;
+  }
 
-    private readonly Move _attacks;
-
-    public override Move Moves
-    {
-        get => _moves;
-        init => _moves = value;
-    }
-
-    public override Move Attacks
-    {
-        get => _attacks;
-        init => _attacks = value;
-    }
-
-    public QueenPiece(Sets set)
-    {
-        _set = set;
-        _attacks = _moves;
-    }
-
-    public override MoveResult IsValidMove(Move move)
-    {
-        throw new NotImplementedException();
-    }
+  public override int[,] GetValidMoves(IEnumerable<IEnumerable<PieceBase>> board)
+  {
+    throw new NotImplementedException();
+  }
 }
