@@ -28,7 +28,7 @@
 </div>
 
 @code {
-  IEnumerable<IEnumerable<PieceBase>> BoardPieces = Array.Empty<IEnumerable<PieceBase>>();
+  IList<IList<PieceBase>> BoardPieces = new List<IList<PieceBase>>();
   int[,] highlights = new int[8,8];
 
   PieceBase? selectedPiece = null;
@@ -41,14 +41,14 @@
   //NOTE: FEN meaning:                           Board state,whos move,castiling,En passant, Halfmove clock,Fullmove number
   private string _boardLayout = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-  private string _test = "8/8/8/3b4/4p3/8/8/8 w KQkq - 0 1";
+  private string _test = "8/8/8/3n4/8/8/8/8 w KQkq - 0 1";
 
   protected override async Task OnInitializedAsync()
   {
     if (Game.CurrentFEN is not "")
       _boardLayout = Game.CurrentFEN;
 
-    BoardPieces = BoardHelpers.FENToBoard(_boardLayout, Set);
+    BoardPieces = BoardHelpers.FENToBoard(_test);
 
     await InvokeAsync(() => StateHasChanged());
   }
@@ -57,10 +57,31 @@
   {
     PieceBase piece = BoardPieces.GetPiece(x, y);
 
-    if (piece is EmptyPiece)
+    if (selectedPiece is not null && SquareContainsMove(x, y)) {
+      int[] selectedPiecePosition = selectedPiece.Position;
+      BoardPieces[selectedPiecePosition[1]][selectedPiecePosition[0]] = new EmptyPiece();
+      BoardPieces[y][x] = selectedPiece;
+
+      selectedPiece.Position = [x, y];
+
+      highlights = BoardPieces[selectedPiecePosition[1]][selectedPiecePosition[0]].GetValidMoves(BoardPieces);
+
+      selectedPiece = null;
+      await InvokeAsync(() => StateHasChanged());
       return;
+    }
+
+    //NOTE: check if select and piece is same object [                    ]
+    if (piece is EmptyPiece || Object.ReferenceEquals(selectedPiece, piece)) {
+      EmptyPiece empty = new EmptyPiece();
+      highlights = empty.GetValidMoves(BoardPieces);
+      selectedPiece = null;
+      await InvokeAsync(() => StateHasChanged());
+      return;
+    }
 
     highlights = piece.GetValidMoves(BoardPieces);
+    selectedPiece = piece;
 
     await InvokeAsync(() => StateHasChanged());
   }
@@ -73,13 +94,12 @@
 
   bool SquareContainsMove(int x, int y)
   {
-    return false;
-    throw new NotImplementedException();
+    return highlights[x, y] != 0;
   }
 
   string GetCellColor(int x, int y)
   {
-    return highlights[y,x] switch {
+    return highlights[x,y] switch {
       1 => "color-green",
       2 => "color-red",
       //NOTE: all even (index based) cells must be white, all un-even must be black

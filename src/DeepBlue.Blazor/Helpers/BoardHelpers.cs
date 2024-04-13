@@ -24,12 +24,12 @@ public static class BoardHelpers
     return result;
   }
 
-  public static IList<IEnumerable<PieceBase>> FENToBoard(string fenString, Sets set)
+  public static IList<IList<PieceBase>> FENToBoard(string fenString)
   {
     string[] notationPieces = fenString.Split(' ');
     string[] ranks = notationPieces[0].Split('/');
 
-    List<IEnumerable<PieceBase>> result = new List<IEnumerable<PieceBase>>();
+    List<IList<PieceBase>> result = new List<IList<PieceBase>>();
 
     for (int i = 0; i < ranks.Length; ++i)
     {
@@ -60,10 +60,6 @@ public static class BoardHelpers
 
       result.Add(rank);
     }
-
-    //NOTE: FEN is seen from whites side, so flip if black
-    if (set is Sets.Black)
-      result.Reverse();
 
     return result;
   }
