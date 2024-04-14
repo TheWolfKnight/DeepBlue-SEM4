@@ -1,5 +1,6 @@
 
 using DeepBlue.Shared.Enums;
+using System.Linq;
 
 namespace DeepBlue.Shared.Models.Pieces;
 
@@ -50,16 +51,36 @@ public class BishopPiece : PieceBase
 
         if (boardPiece is EmptyPiece)
         {
-          result[current_pos[1], current_pos[0]] = 1;
+          result[current_pos[0], current_pos[1]] = 1;
           continue;
         }
         else if (boardPiece.PieceSet == enemySet)
-          result[current_pos[1], current_pos[0]] = 2;
+          result[current_pos[0], current_pos[1]] = 2;
         break;
       }
     }
 
     return result;
+  }
+
+  public override int[,] GetAttackMoves(IEnumerable<IEnumerable<PieceBase>> board)
+  {
+    int[,] results = GetValidMoves(board);
+
+    for (int i = 0; i < 8; ++i)
+    {
+      for (int j = 0; j < 8; ++j)
+      {
+        if (results[j, i] is 1)
+          results[j, i] = 2;
+      }
+    }
+
+    return results;
+  }
+
+  public override void MadeMove()
+  {
   }
 
   private bool MoveWithinBoard(int x, int y)

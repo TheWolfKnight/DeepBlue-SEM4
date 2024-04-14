@@ -8,4 +8,7 @@ public abstract class PieceBase
   public abstract int[] Position { get; set; }
 
   public abstract int[,] GetValidMoves(IEnumerable<IEnumerable<PieceBase>> board);
+  public abstract int[,] GetAttackMoves(IEnumerable<IEnumerable<PieceBase>> board);
+
+  public abstract void MadeMove();
 }

@@ -21,4 +21,13 @@ public class EmptyPiece : PieceBase
   {
     return new int[8, 8];
   }
+
+  public override int[,] GetAttackMoves(IEnumerable<IEnumerable<PieceBase>> board)
+  {
+    return new int[8, 8];
+  }
+
+  public override void MadeMove()
+  {
+  }
 }

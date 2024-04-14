@@ -7,6 +7,7 @@ public class PawnPiece : PieceBase
 {
   private readonly Sets _set;
   private int[] _position = new int[2];
+  private bool _firstMove = true;
 
   public override Sets PieceSet
   {
@@ -28,16 +29,18 @@ public class PawnPiece : PieceBase
   {
     int[,] results = new int[8, 8];
 
-    for (int i = 1; i < 3; ++i)
+    for (int i = 1; i < 3 - (_firstMove ? 0 : 1); ++i)
     {
-      int[] current_pos = [_position[0] + i, _position[1]];
+      int[] current_pos = [_position[0], _position[1] + -i * (_set is Sets.Black ? -1 : 1)];
 
       if (!MoveWithinBoard(current_pos[0], current_pos[1]))
         break;
 
-      PieceBase piece = board.ElementAt(current_pos[0]).ElementAt(current_pos[1]);
+      PieceBase piece = board.ElementAt(current_pos[1]).ElementAt(current_pos[0]);
       if (piece is EmptyPiece)
         results[current_pos[0], current_pos[1]] = 1;
+      else
+        break;
     }
 
     int[][] attacks = [[-1, -1 * (_set is Sets.Black ? -1 : 1)], [1, -1 * (_set is Sets.Black ? -1 : 1)]];
@@ -48,10 +51,31 @@ public class PawnPiece : PieceBase
       int[] current_pos = [_position[0] + attack[0], _position[1] + attack[1]];
 
       if (!MoveWithinBoard(current_pos[0], current_pos[1]))
-        break;
+        continue;
 
-      PieceBase piece = board.ElementAt(current_pos[0]).ElementAt(current_pos[1]);
+      PieceBase piece = board.ElementAt(current_pos[1]).ElementAt(current_pos[0]);
       if (piece is not EmptyPiece && piece.PieceSet == enemySet)
+        results[current_pos[0], current_pos[1]] = 2;
+    }
+
+    return results;
+  }
+
+  public override int[,] GetAttackMoves(IEnumerable<IEnumerable<PieceBase>> board)
+  {
+    int[,] results = new int[8, 8];
+
+    int[][] attacks = [[-1, -1 * (_set is Sets.Black ? -1 : 1)], [1, -1 * (_set is Sets.Black ? -1 : 1)]];
+
+    foreach (int[] attack in attacks)
+    {
+      int[] current_pos = [_position[0] + attack[0], _position[1] + attack[1]];
+
+      if (!MoveWithinBoard(current_pos[0], current_pos[1]))
+        continue;
+
+      PieceBase piece = board.ElementAt(current_pos[1]).ElementAt(current_pos[0]);
+      if (piece is EmptyPiece)
         results[current_pos[0], current_pos[1]] = 2;
     }
 
@@ -61,5 +85,10 @@ public class PawnPiece : PieceBase
   private bool MoveWithinBoard(int x, int y)
   {
     return x >= 0 && x < 8 && y >= 0 && y < 8;
+  }
+
+  public override void MadeMove()
+  {
+    _firstMove = false;
   }
 }

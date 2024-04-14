@@ -41,14 +41,12 @@
   //NOTE: FEN meaning:                           Board state,whos move,castiling,En passant, Halfmove clock,Fullmove number
   private string _boardLayout = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-  private string _test = "8/8/8/3n4/8/8/8/8 w KQkq - 0 1";
-
   protected override async Task OnInitializedAsync()
   {
     if (Game.CurrentFEN is not "")
       _boardLayout = Game.CurrentFEN;
 
-    BoardPieces = BoardHelpers.FENToBoard(_test);
+    BoardPieces = BoardHelpers.FENToBoard(_boardLayout);
 
     await InvokeAsync(() => StateHasChanged());
   }
@@ -58,23 +56,13 @@
     PieceBase piece = BoardPieces.GetPiece(x, y);
 
     if (selectedPiece is not null && SquareContainsMove(x, y)) {
-      int[] selectedPiecePosition = selectedPiece.Position;
-      BoardPieces[selectedPiecePosition[1]][selectedPiecePosition[0]] = new EmptyPiece();
-      BoardPieces[y][x] = selectedPiece;
-
-      selectedPiece.Position = [x, y];
-
-      highlights = BoardPieces[selectedPiecePosition[1]][selectedPiecePosition[0]].GetValidMoves(BoardPieces);
-
-      selectedPiece = null;
-      await InvokeAsync(() => StateHasChanged());
+      await MakeMove(x, y);
       return;
     }
 
     //NOTE: check if select and piece is same object [                    ]
     if (piece is EmptyPiece || Object.ReferenceEquals(selectedPiece, piece)) {
-      EmptyPiece empty = new EmptyPiece();
-      highlights = empty.GetValidMoves(BoardPieces);
+      highlights = new int[8,8];
       selectedPiece = null;
       await InvokeAsync(() => StateHasChanged());
       return;
@@ -105,5 +93,24 @@
       //NOTE: all even (index based) cells must be white, all un-even must be black
       _ => (x + y) % 2 == 0 ? "color-white" : "color-black",
     };
+  }
+
+  async Task MakeMove(int x, int y)
+  {
+    if (selectedPiece is null)
+      return;
+
+    int[] selectedPiecePosition = selectedPiece.Position;
+    BoardPieces[selectedPiecePosition[1]][selectedPiecePosition[0]] = new EmptyPiece();
+    BoardPieces[y][x] = selectedPiece;
+
+    selectedPiece.Position = [x, y];
+
+    highlights = BoardPieces[selectedPiecePosition[1]][selectedPiecePosition[0]].GetValidMoves(BoardPieces);
+
+    selectedPiece.MadeMove();
+    selectedPiece = null;
+    await InvokeAsync(() => StateHasChanged());
+    return;
   }
 }
