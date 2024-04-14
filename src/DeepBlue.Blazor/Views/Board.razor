@@ -15,10 +15,10 @@
         int tmp_x = x, tmp_y = y;
         <div id="column-@x" class="board-column @GetCellColor(x, y)">
           <button class="chess-piece" @onclick="() => OnSquareClicked(tmp_x, tmp_y)">
-          @if (BoardPieces.GetPiece(x, y) is not EmptyPiece)
+          @if (Game.GetPiece(x, y) is not EmptyPiece)
           {
               <img src="img/pieces/@GetPieceGraphic(x, y)"
-                   class="chess-piece @(selectedPiece == BoardPieces.GetPiece(x, y) ? "selected" : "")" />
+                   class="chess-piece @(Game.SelectedPiece == Game.GetPiece(x, y) ? "selected" : "")" />
           }
           </button>
         </div>
@@ -28,10 +28,7 @@
 </div>
 
 @code {
-  IList<IList<PieceBase>> BoardPieces = new List<IList<PieceBase>>();
   int[,] highlights = new int[8,8];
-
-  PieceBase? selectedPiece = null;
 
   (int X, int Y) BoardDimensions = (8, 8);
 
@@ -43,40 +40,44 @@
 
   protected override async Task OnInitializedAsync()
   {
+    //NOTE: this is for if the game is loaded from server
     if (Game.CurrentFEN is not "")
       _boardLayout = Game.CurrentFEN;
 
-    BoardPieces = BoardHelpers.FENToBoard(_boardLayout);
+    Game.BoardPieces = BoardHelpers.FENToBoard(Game.CurrentFEN);
 
     await InvokeAsync(() => StateHasChanged());
   }
 
   async Task OnSquareClicked(int x, int y)
   {
-    PieceBase piece = BoardPieces.GetPiece(x, y);
+    PieceBase piece = Game.GetPiece(x, y);
 
-    if (selectedPiece is not null && SquareContainsMove(x, y)) {
-      await MakeMove(x, y);
-      return;
-    }
-
-    //NOTE: check if select and piece is same object [                    ]
-    if (piece is EmptyPiece || Object.ReferenceEquals(selectedPiece, piece)) {
+    if (Game.SelectedPiece is not null && SquareContainsMove(x, y)) {
+      Game.MakeMove(x, y);
       highlights = new int[8,8];
-      selectedPiece = null;
+
       await InvokeAsync(() => StateHasChanged());
       return;
     }
 
-    highlights = piece.GetValidMoves(BoardPieces);
-    selectedPiece = piece;
+    //NOTE: check if select and piece is same object [                    ]
+    if (piece is EmptyPiece || Object.ReferenceEquals(Game.SelectedPiece, piece)) {
+      highlights = new int[8,8];
+      Game.SelectedPiece = null;
+      await InvokeAsync(() => StateHasChanged());
+      return;
+    }
+
+    highlights = piece.GetValidMoves(Game.BoardPieces);
+    Game.SelectedPiece = piece;
 
     await InvokeAsync(() => StateHasChanged());
   }
 
   string GetPieceGraphic(int x, int y)
   {
-    PieceBase piece = BoardPieces.GetPiece(x, y);
+    PieceBase piece = Game.GetPiece(x, y);
     return BoardHelpers.GetPieceString(piece);
   }
 
@@ -93,24 +94,5 @@
       //NOTE: all even (index based) cells must be white, all un-even must be black
       _ => (x + y) % 2 == 0 ? "color-white" : "color-black",
     };
-  }
-
-  async Task MakeMove(int x, int y)
-  {
-    if (selectedPiece is null)
-      return;
-
-    int[] selectedPiecePosition = selectedPiece.Position;
-    BoardPieces[selectedPiecePosition[1]][selectedPiecePosition[0]] = new EmptyPiece();
-    BoardPieces[y][x] = selectedPiece;
-
-    selectedPiece.Position = [x, y];
-
-    highlights = BoardPieces[selectedPiecePosition[1]][selectedPiecePosition[0]].GetValidMoves(BoardPieces);
-
-    selectedPiece.MadeMove();
-    selectedPiece = null;
-    await InvokeAsync(() => StateHasChanged());
-    return;
   }
 }
