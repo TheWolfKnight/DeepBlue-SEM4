@@ -43,6 +43,8 @@
     //NOTE: this is for if the game is loaded from server
     if (Game.CurrentFEN is not "")
       _boardLayout = Game.CurrentFEN;
+    else
+      Game.CurrentFEN = _boardLayout;
 
     Game.BoardPieces = BoardHelpers.FENToBoard(Game.CurrentFEN);
 
