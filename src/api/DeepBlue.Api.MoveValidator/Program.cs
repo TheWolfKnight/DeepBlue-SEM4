@@ -1,3 +1,6 @@
+using DeepBlue.Api.MoveValidator.Services;
+using DeepBlue.Api.MoveValidator.Services.Interfaces;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,6 +10,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDaprClient();
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<IFENService, FENService>();
 
 WebApplication app = builder.Build();
 

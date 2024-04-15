@@ -15,7 +15,7 @@ public class GameState
 
   public Sets PlayerSet { get; } = Sets.White;
 
-  public Sets CanMovePiece { get; set; } = Sets.White;
+  public Sets CanMovePieces { get; set; } = Sets.White;
 
   public PieceBase GetPiece(int x, int y)
   {
@@ -39,7 +39,7 @@ public class GameState
     SelectedPiece.MadeMove();
     SelectedPiece = null;
 
-    CanMovePiece = CanMovePiece is Sets.White ? Sets.Black : Sets.White;
+    CanMovePieces = CanMovePieces is Sets.White ? Sets.Black : Sets.White;
   }
 
   public string ConvertGameToFEN()
