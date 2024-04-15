@@ -1,3 +1,4 @@
+using System.Text.Json;
 using DeepBlue.Api.MoveValidator.Services;
 using DeepBlue.Api.MoveValidator.Services.Interfaces;
 
@@ -8,8 +9,13 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDaprClient();
-builder.Services.AddControllers();
+JsonSerializerOptions jsonOptions = new JsonSerializerOptions
+{
+  AllowTrailingCommas = true,
+  PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+};
+
+builder.Services.AddControllers().AddDapr(config => config.UseJsonSerializationOptions(jsonOptions));
 
 builder.Services.AddScoped<IFENService, FENService>();
 
@@ -21,6 +27,9 @@ if (app.Environment.IsDevelopment())
   app.UseSwagger();
   app.UseSwaggerUI();
 }
+
+app.UseCloudEvents();
+app.MapSubscribeHandler();
 
 app.UseHttpsRedirection();
 
