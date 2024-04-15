@@ -55,7 +55,7 @@
   {
     PieceBase piece = Game.GetPiece(x, y);
 
-    if (Game.SelectedPiece is not null && SquareContainsMove(x, y)) {
+    if (ShouldMakeMove(x, y)) {
       Game.MakeMove(x, y);
       highlights = new int[8,8];
 
@@ -63,8 +63,7 @@
       return;
     }
 
-    //NOTE: check if select and piece is same object [                    ]
-    if (piece is EmptyPiece || Object.ReferenceEquals(Game.SelectedPiece, piece) || piece.PieceSet != Game.CanMovePieces) {
+    if (ShouldUnSelectPiece(piece)) {
       highlights = new int[8,8];
       Game.SelectedPiece = null;
       await InvokeAsync(() => StateHasChanged());
@@ -83,10 +82,11 @@
     return BoardHelpers.GetPieceString(piece);
   }
 
-  bool SquareContainsMove(int x, int y)
-  {
-    return highlights[x, y] != 0;
-  }
+  bool ShouldMakeMove(int x, int y) => Game.SelectedPiece is not null && highlights[x, y] != 0;
+  bool ShouldUnSelectPiece(PieceBase piece) =>
+    piece is EmptyPiece ||
+    Object.ReferenceEquals(Game.SelectedPiece, piece) ||
+    piece.PieceSet != Game.CanMovePieces;
 
   string GetCellColor(int x, int y)
   {
