@@ -15,7 +15,9 @@ JsonSerializerOptions jsonOptions = new JsonSerializerOptions
   PropertyNamingPolicy = JsonNamingPolicy.CamelCase
 };
 
-builder.Services.AddControllers().AddDapr(config => config.UseJsonSerializationOptions(jsonOptions));
+builder.Services
+  .AddControllers()
+  .AddDapr(config => config.UseJsonSerializationOptions(jsonOptions));
 
 builder.Services.AddScoped<IFENService, FENService>();
 

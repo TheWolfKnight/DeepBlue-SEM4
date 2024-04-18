@@ -5,12 +5,13 @@ using DeepBlue.Shared.Models;
 using DeepBlue.Api.MoveValidator.Services.Interfaces;
 using DeepBlue.Shared.Models.Pieces;
 using DeepBlue.Shared.Enums;
+using Dapr;
 
 namespace DeepBlue.Api.MoveValidator.Controllers;
 
 [Controller]
 [Route("[controller]")]
-public class ValidatorController
+public class ValidatorController : ControllerBase
 {
   private readonly IFENService _fenService;
 
@@ -21,7 +22,7 @@ public class ValidatorController
 
   [HttpPut]
   [Route("validate")]
-  public ActionResult ValidateMove(ValidateMoveDto dto)
+  public IResult ValidateMove(ValidateMoveDto dto)
   {
     IList<IList<PieceBase>> boardState = _fenService.FENToBoard(dto.FEN);
     Sets movingSet = _fenService.GetMovingSetFromFEN(dto.FEN);
@@ -29,12 +30,12 @@ public class ValidatorController
     PieceBase selectedPiece = boardState[dto.From.Y][dto.From.X];
 
     if (selectedPiece is EmptyPiece || selectedPiece.PieceSet != movingSet)
-      return new StatusCodeResult(406);
+      return Results.StatusCode(406);
 
     int[,] selectedPieceMoves = selectedPiece.GetValidMoves(boardState);
 
     if (selectedPieceMoves[dto.To.X, dto.To.Y] != 0)
-      return new OkResult();
-    return new StatusCodeResult(406);
+      return Results.Ok();
+    return Results.StatusCode(406);
   }
 }
