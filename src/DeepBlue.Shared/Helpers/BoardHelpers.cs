@@ -3,7 +3,7 @@ using DeepBlue.Shared.Enums;
 using DeepBlue.Shared.Models;
 using DeepBlue.Shared.Models.Pieces;
 
-namespace DeepBlue.Blazor.Helpers;
+namespace DeepBlue.Shared.Helpers;
 
 public static class BoardHelpers
 {
