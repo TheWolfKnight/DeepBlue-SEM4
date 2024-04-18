@@ -22,7 +22,7 @@ public class ValidatorController : ControllerBase
 
   [HttpPut]
   [Route("validate")]
-  public IResult ValidateMove(ValidateMoveDto dto)
+  public IResult ValidateMove([Topic("make-move-pubsub", "move-validater")] ValidateMoveDto dto)
   {
     IList<IList<PieceBase>> boardState = _fenService.FENToBoard(dto.FEN);
     Sets movingSet = _fenService.GetMovingSetFromFEN(dto.FEN);
