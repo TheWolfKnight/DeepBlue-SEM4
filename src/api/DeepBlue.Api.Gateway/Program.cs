@@ -12,7 +12,7 @@ builder.Services.AddSignalR(config => config.EnableDetailedErrors = true);
 
 builder.Services.AddCors(opts =>
 {
-  opts.AddPolicy(CorsPolicys.TestHub.AllowFrontend,
+  opts.AddPolicy(CorsPolicys.AllowFrontend,
     config => config.WithOrigins("http://localhost:5198",
                                  "https://localhost:7183")
                     .AllowAnyHeader()

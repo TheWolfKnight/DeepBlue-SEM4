@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace DeepBlue.Api.Gateway.Hubs;
 
-[EnableCors(CorsPolicys.TestHub.AllowFrontend)]
+[EnableCors(CorsPolicys.AllowFrontend)]
 public class TestHub : Hub
 {
   public async Task TestEcho(string message)
