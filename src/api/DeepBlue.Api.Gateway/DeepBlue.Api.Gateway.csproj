@@ -9,9 +9,13 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-    <PackageReference Include="Dapr.AspNetCore" Version="1.13.*-*" />
+    <PackageReference Include="Dapr.Client" Version="1.13.*-*" />
     <PackageReference Include="Ocelot" Version="23.2.2" />
+    <PackageReference Include="NRedisStack" Version="0.12.0" />
+  </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\DeepBlue.Shared\DeepBlue.Shared.csproj" />
   </ItemGroup>
 
 </Project>

@@ -12,4 +12,8 @@
     <PackageReference Include="Dapr.AspNetCore" Version="1.13.*-*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\DeepBlue.Shared\DeepBlue.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

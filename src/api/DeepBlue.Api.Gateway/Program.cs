@@ -1,5 +1,9 @@
+using DeepBlue.Api.DaprClients;
+using DeepBlue.Api.DaprClients.Interfaces;
 using DeepBlue.Api.Gateway;
 using DeepBlue.Api.Gateway.Hubs;
+using DeepBlue.Api.RedisHandler;
+using DeepBlue.Api.RedisHandler.Interfaces;
 using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,9 +31,14 @@ builder.Services.AddResponseCompression(opts =>
     ["application/octet-stream"]);
 });
 
+builder.Services.AddScoped<IMakeMoveClient, MakeMoveClient>();
+builder.Services.AddScoped<IMoveValidationClient, MoveValidationClient>();
+builder.Services.AddScoped<IRedisHandler, RedisHandler>();
+
 var app = builder.Build();
 
 app.MapHub<TestHub>("/testhub");
+app.MapHub<MakeMoveHub>("/makemovehub");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
