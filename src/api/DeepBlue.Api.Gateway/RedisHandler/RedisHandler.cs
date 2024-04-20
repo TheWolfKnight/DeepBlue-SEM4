@@ -25,6 +25,11 @@ public class RedisHandler : IRedisHandler
     await _database.StringSetAsync(key, value);
   }
 
+  public async Task RemoveStringAsync(string key)
+  {
+    await _database.KeyDeleteAsync(key);
+  }
+
   public void Dispose()
   {
     _connMultiplex.Close();
