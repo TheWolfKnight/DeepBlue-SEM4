@@ -1,4 +1,5 @@
 
+using DeepBlue.Blazor.Views;
 using DeepBlue.Shared.Enums;
 using DeepBlue.Shared.Models;
 using DeepBlue.Shared.Models.Pieces;
@@ -44,8 +45,27 @@ public class GameState
 
   public string ConvertGameToFEN()
   {
-    //TODO: this
-    throw new NotImplementedException();
-  }
+    string[] ranks = new string[8];
+    int rankPtr = 0;
 
+    foreach (IList<PieceBase> row in BoardPieces)
+    {
+      string rank = string.Empty;
+      IEnumerator<PieceBase> columns = row.GetEnumerator();
+
+      while (columns.MoveNext())
+      {
+
+      }
+
+      ranks[rankPtr] = rank;
+    }
+
+    string result = string.Join("/", ranks);
+    result += $" {(CanMovePieces is Sets.White ? "w" : "b")} ";
+
+    result += " KQkq 0 1";
+
+    return result;
+  }
 }

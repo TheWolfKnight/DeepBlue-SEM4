@@ -14,4 +14,7 @@ public class ValidateMoveDto
 
   [JsonPropertyName("fen")]
   public required string FEN { get; init; }
+
+  [JsonPropertyName("connectionId")]
+  public required string ConnectionId { get; init; }
 }

@@ -23,9 +23,11 @@ public class MakeMoveHub : Hub
 
   public async Task MakeMove()
   {
+    throw new System.NotImplementedException();
   }
 
   public async Task ValidateMove(ValidateMoveDto dto)
   {
+    throw new System.NotImplementedException();
   }
 }
