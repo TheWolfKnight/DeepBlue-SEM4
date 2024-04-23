@@ -1,7 +1,20 @@
 ﻿@page "/"
 
+@inject ITestHubConnection TestHubConn
+
+<button @onclick="@(() => TestHubConn.SendMessageAsync("Hello"))">test</button>
+
 <PageTitle>Home</PageTitle>
 
 <h1>Deep Blue</h1>
 
 <Board Set=@Sets.White />
+
+@code {
+
+  protected override async Task OnInitializedAsync()
+  {
+    await TestHubConn.StartConnectionAsync();
+  }
+
+}

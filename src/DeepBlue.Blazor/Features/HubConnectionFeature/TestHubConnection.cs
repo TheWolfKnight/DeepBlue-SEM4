@@ -13,7 +13,7 @@ public class TestHubConnection : ITestHubConnection
   public TestHubConnection()
   {
     _hubConnection = new HubConnectionBuilder()
-      .WithUrl("https://localhost:7057/testhub")
+      .WithUrl("http://localhost:5222/testhub")
       .Build();
   }
 

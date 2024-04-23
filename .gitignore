@@ -1,6 +1,7 @@
 
 .vs/
 .vscode/
+.dapr/
 ignore/
 **/*.ignore
 

@@ -2,11 +2,11 @@ version: 1
 common:
   resourcesPath: ./Componants
 apps:
-  - appID: blazor-webapp
-    appDirPath: ./DeepBlue.Blazor
+  - appId: gateway
+    appDirPath: ./api/DeepBlue.Api.GateWay
     appPort: 30001
     command: ["dotnet", "run", "-c Release"]
   - appID: move-validator
     appDirPath: ./api/DeepBlue.Api.MoveValidator
     appPort: 30002
-    commnd: ["dotnet", "run", "-c Release"]
+    command: ["dotnet", "run", "-c Release"]
