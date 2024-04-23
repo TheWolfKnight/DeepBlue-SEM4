@@ -72,7 +72,7 @@ public static class BoardHelpers
       QueenPiece => 'Q',
       RookPiece => 'R',
       BishopPiece => 'B',
-      KnightPiece => 'K',
+      KnightPiece => 'N',
       PawnPiece => 'P',
       _ => throw new Exception("Unrechable code")
     };

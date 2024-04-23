@@ -57,7 +57,8 @@ public class GameState
     string result = string.Join("/", ranks);
     result += $" {(CanMovePieces is Sets.White ? "w" : "b")} ";
 
-    result += " KQkq 0 1";
+    //NOTE: these elements are un-used in the current version
+    result += "KQkq - 0 1";
 
     return result;
   }
