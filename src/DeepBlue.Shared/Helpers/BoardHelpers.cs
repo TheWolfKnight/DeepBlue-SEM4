@@ -64,6 +64,23 @@ public static class BoardHelpers
     return result;
   }
 
+  public static char GetPieceLetter(this PieceBase piece)
+  {
+    char chr = piece switch
+    {
+      KingPiece => 'K',
+      QueenPiece => 'Q',
+      RookPiece => 'R',
+      BishopPiece => 'B',
+      KnightPiece => 'K',
+      PawnPiece => 'P',
+      _ => throw new Exception("Unrechable code")
+    };
+
+    chr = piece.PieceSet is Sets.White ? chr : char.ToLower(chr);
+    return chr;
+  }
+
   private static string GetColor(Sets set)
   {
     return set is Sets.White ? "white" : "black";

@@ -1,8 +1,8 @@
 
-using DeepBlue.Blazor.Views;
 using DeepBlue.Shared.Enums;
 using DeepBlue.Shared.Models;
 using DeepBlue.Shared.Models.Pieces;
+using DeepBlue.Shared.Helpers;
 
 namespace DeepBlue.Blazor.Models;
 
@@ -50,21 +50,50 @@ public class GameState
 
     foreach (IList<PieceBase> row in BoardPieces)
     {
-      string rank = string.Empty;
-      IEnumerator<PieceBase> columns = row.GetEnumerator();
-
-      while (columns.MoveNext())
-      {
-
-      }
-
-      ranks[rankPtr] = rank;
+      string rank = GetRankString(row);
+      ranks[rankPtr++] = rank;
     }
 
     string result = string.Join("/", ranks);
     result += $" {(CanMovePieces is Sets.White ? "w" : "b")} ";
 
     result += " KQkq 0 1";
+
+    return result;
+  }
+
+  private string GetRankString(IList<PieceBase> rank)
+  {
+    string result = string.Empty;
+
+    IEnumerator<PieceBase> columns = rank.GetEnumerator();
+
+    while (columns.MoveNext())
+    {
+      PieceBase piece = columns.Current;
+
+      if (piece is EmptyPiece)
+      {
+        int n = 1;
+        while (columns.Current is EmptyPiece)
+        {
+          if (!columns.MoveNext())
+          {
+            result += n;
+            return result;
+          }
+          else if (columns.Current is not EmptyPiece)
+          {
+            result += n;
+            break;
+          }
+
+          n++;
+        }
+      }
+
+      result += piece.GetPieceLetter();
+    }
 
     return result;
   }
