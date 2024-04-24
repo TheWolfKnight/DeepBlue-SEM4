@@ -15,7 +15,7 @@ public class MakeMoveHubConnection : IMakeMoveHubConnection
   public MakeMoveHubConnection()
   {
     _hubConnection = new HubConnectionBuilder()
-      .WithUrl("https://localhost:7057/makemovehub")
+      .WithUrl("https://localhost:5222/makemovehub")
       .Build();
   }
 

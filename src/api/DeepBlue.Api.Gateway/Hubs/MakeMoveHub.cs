@@ -7,7 +7,7 @@ using DeepBlue.Api.RedisHandler.Interfaces;
 
 namespace DeepBlue.Api.Gateway.Hubs;
 
-[EnableCors(CorsPolicys.AllowFrontend)]
+[EnableCors(CorsPolicies.AllowFrontend)]
 public class MakeMoveHub : Hub
 {
   private readonly IMakeMoveClient _makeMoveClient;

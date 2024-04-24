@@ -16,7 +16,7 @@ builder.Services.AddSignalR(config => config.EnableDetailedErrors = true);
 
 builder.Services.AddCors(opts =>
 {
-  opts.AddPolicy(CorsPolicys.AllowFrontend,
+  opts.AddPolicy(CorsPolicies.AllowFrontend,
     config => config.WithOrigins("http://localhost:5198",
                                  "https://localhost:7183")
                     .AllowAnyHeader()
@@ -47,9 +47,9 @@ if (app.Environment.IsDevelopment())
   app.UseSwaggerUI();
 }
 
-app.UseCors(CorsPolicys.AllowFrontend);
+app.UseCors(CorsPolicies.AllowFrontend);
 
 app.UseHttpsRedirection();
 app.UseResponseCompression();
 
-app.Run();
+await app.RunAsync();

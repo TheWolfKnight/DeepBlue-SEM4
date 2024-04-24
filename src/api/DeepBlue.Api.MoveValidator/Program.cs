@@ -1,4 +1,5 @@
 using System.Text.Json;
+using DeepBlue.Api.MoveValidator;
 using DeepBlue.Api.MoveValidator.Services;
 using DeepBlue.Api.MoveValidator.Services.Interfaces;
 
@@ -8,6 +9,14 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddCors(opts =>
+  opts.AddPolicy(CorsPolicies.AllowGateway, policy =>
+    policy.WithOrigins()
+          .AllowAnyHeader()
+          .AllowAnyMethod()
+  )
+);
 
 JsonSerializerOptions jsonOptions = new JsonSerializerOptions
 {
@@ -33,6 +42,8 @@ if (app.Environment.IsDevelopment())
 app.UseCloudEvents();
 app.MapSubscribeHandler();
 
+app.UseCors(CorsPolicies.AllowGateway);
+
 app.UseHttpsRedirection();
 
-app.Run();
+await app.RunAsync();

@@ -6,7 +6,7 @@ apps:
     appDirPath: ./api/DeepBlue.Api.GateWay
     appPort: 30001
     command: ["dotnet", "run", "-c Release"]
-  - appID: move-validator
+  - appId: move-validator
     appDirPath: ./api/DeepBlue.Api.MoveValidator
     appPort: 30002
     command: ["dotnet", "run", "-c Release"]

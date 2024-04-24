@@ -17,7 +17,7 @@ public class TestHubConnection : ITestHubConnection
       .Build();
   }
 
-  public async Task StartConnectionAsync()
+  public async Task StartAsync()
   {
     if (IsConnected)
       return;
