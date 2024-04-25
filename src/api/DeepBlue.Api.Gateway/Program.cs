@@ -1,8 +1,5 @@
 
-using DeepBlue.Api.Gateway;
 using DeepBlue.Api.Gateway.Hubs;
-using DeepBlue.Api.RedisHandler;
-using DeepBlue.Api.RedisHandler.Interfaces;
 using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,14 +15,6 @@ builder.Services.AddCors(opts =>
   opts.AddDefaultPolicy(policy => policy.AllowAnyOrigin()
                                         .AllowAnyHeader()
                                         .AllowAnyMethod());
-
-  // opts.AddPolicy(CorsPolicies.AllowFrontend,
-  //   config => config.WithOrigins("http://localhost:5198",
-  //                                "https://localhost:7183")
-  //                   .AllowAnyHeader()
-  //                   .AllowAnyMethod()
-  //                   .WithExposedHeaders("*")
-  // );
 });
 
 builder.Services.AddResponseCompression(opts =>
@@ -33,8 +22,6 @@ builder.Services.AddResponseCompression(opts =>
   opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
     ["application/octet-stream"]);
 });
-
-builder.Services.AddScoped<IRedisHandler, RedisHandler>();
 
 builder.Services
   .AddControllers()

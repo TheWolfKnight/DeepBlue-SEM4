@@ -1,0 +1,76 @@
+version: '0.1'
+services:
+### FRONTEND
+
+  # blazor:
+  #   image: "${DOCKER_REGISTRY-}deepblueblazor"
+  #   build:
+  #     context: .
+  #     dockerfile: src/DeepBlue.Blazor/Dockerfile
+  #   ports:
+  #     - "5198:80"
+  #     - "443:443"
+  #   depends_on:
+  #     - gateway-dapr
+  #   environment:
+  #     "ASPNETCOR_ENVIRONMENT": "Development"
+  #     "ASPNETCORE_URLS": "http://+:80"
+
+### END FRONTEND
+
+#### APIs
+
+  gateway:
+    image: "${DOCKER_REGISTRY-}deepblueapigateway"
+    build:
+      context: .
+      dockerfile: src/api/DeepBlue.Api.Gateway/Dockerfile
+    ports:
+      - "5222:80"
+    environment:
+      "ASPNETCOR_ENVIRONMENT": "Development"
+      "ASPNETCORE_URLS": "http://+:80"
+
+  movement_validator:
+    image: "${DOCKER_REGISTRY-}deepblueapimovevalidator"
+    build:
+      context: .
+      dockerfile: src/api/DeepBlue.Api.MoveValidator/Dockerfile
+    ports:
+      - "5261:80"
+    environment:
+      "ASPNETCOR_ENVIRONMENT": "Development"
+      "ASPNETCORE_URLS": "http://+:80"
+### END APIs
+
+### DAPR
+
+  gateway-dapr:
+    image:  "daprio/daprd:latest"
+    command: ["./daprd", "-app-id", "gateway", "-app-port", "30001", "--dapr-http-port", "20001", "-dapr-grpc-port", "10001", "-resources-path", "/components"]
+    volumes:
+      - "./Componants/:/components"
+    depends_on:
+      - gateway
+    network_mode: "service:gateway"
+
+  movement_validator-dapr:
+    image: "daprio/daprd:latest"
+    command: ["./daprd", "-app-id", "move-validaotr", "-app-port", "30002", "--dapr-http-port", "20002", "-dapr-grpc-port", "10002", "-resources-path", "/components"]
+    volumes:
+      - "./Componants/:/components"
+    depends_on:
+      - movement_validator
+    network_mode: "service:movement_validator"
+
+### END DAPR
+
+### REDIS
+
+  redis:
+    image: redis
+    hostname: redisstate
+    ports:
+      - "6379:6379"
+
+### END REDIS

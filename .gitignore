@@ -4,6 +4,7 @@
 .dapr/
 ignore/
 **/*.ignore
+**/*.bak
 
 **/bin
 **/obj

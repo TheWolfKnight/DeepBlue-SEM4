@@ -5,23 +5,31 @@ using DeepBlue.Blazor.Models;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
-var builder = WebAssemblyHostBuilder.CreateDefault(args);
+namespace DeepBlue.Blazor;
 
-builder.RootComponents.Add<App>("#app");
-builder.RootComponents.Add<HeadOutlet>("head::after");
+public class Program
+{
+  public static async Task Main(string[] args)
+  {
+    var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+    builder.RootComponents.Add<App>("#app");
+    builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddSingleton<GameState>();
-builder.Services.AddSingleton<ITestHubConnection, TestHubConnection>();
-builder.Services.AddSingleton<IMakeMoveHubConnection, MakeMoveHubConnection>();
+    builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-var app = builder.Build();
+    builder.Services.AddSingleton<GameState>();
+    builder.Services.AddSingleton<ITestHubConnection, TestHubConnection>();
+    builder.Services.AddSingleton<IMakeMoveHubConnection, MakeMoveHubConnection>();
 
-var testHub = app.Services.GetService<ITestHubConnection>() ?? throw new Exception("Could not find ITestHubConnection instance");
-await testHub.StartAsync();
+    var app = builder.Build();
 
-// var makeMoveHub = app.Services.GetService<IMakeMoveHubConnection>() ?? throw new Exception("Could not find IMakeMoveHubConnection instance");
-// await makeMoveHub.StartAsync();
+    var testHub = app.Services.GetService<ITestHubConnection>() ?? throw new Exception("Could not find ITestHubConnection instance");
+    await testHub.StartAsync();
 
-await app.RunAsync();
+    // var makeMoveHub = app.Services.GetService<IMakeMoveHubConnection>() ?? throw new Exception("Could not find IMakeMoveHubConnection instance");
+    // await makeMoveHub.StartAsync();
+
+    await app.RunAsync();
+  }
+}

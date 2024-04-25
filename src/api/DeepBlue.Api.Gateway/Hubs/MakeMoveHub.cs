@@ -2,18 +2,15 @@
 using Microsoft.AspNetCore.Cors;
 using DeepBlue.Shared.Models.Dtos;
 using Microsoft.AspNetCore.SignalR;
-using DeepBlue.Api.RedisHandler.Interfaces;
 
 namespace DeepBlue.Api.Gateway.Hubs;
 
-[EnableCors(CorsPolicies.AllowFrontend)]
+[EnableCors]
 public class MakeMoveHub : Hub
 {
-  private readonly IRedisHandler _redisHandler;
 
-  public MakeMoveHub(IRedisHandler redisHandler)
+  public MakeMoveHub()
   {
-    _redisHandler = redisHandler;
   }
 
   public async Task MakeMove()
