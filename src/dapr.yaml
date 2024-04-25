@@ -10,3 +10,7 @@ apps:
     appDirPath: ./api/DeepBlue.Api.MoveValidator
     appPort: 30002
     command: ["dotnet", "run", "-c Release"]
+  - appId: engine
+    appDirPath: ./api/DeepBlue.Api.Engine
+    appPort: 30003
+    command: ["dotnet", "run", "-c Release"]

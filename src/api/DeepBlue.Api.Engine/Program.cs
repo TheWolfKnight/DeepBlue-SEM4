@@ -1,3 +1,5 @@
+using DeepBlue.Api.Engine;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -5,8 +7,24 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDaprClient();
-builder.Services.AddControllers();
+builder.Services.AddCors(opts =>
+  opts.AddDefaultPolicy(policy =>
+    policy.AllowAnyOrigin()
+          .AllowAnyHeader()
+          .AllowAnyMethod())
+);
+
+builder.Services
+  .AddControllers()
+  .AddDapr();
+
+string httpPort = Environment.GetEnvironmentVariable("DAPR_HTTP_PORT") ?? "20003";
+string grpcPort = Environment.GetEnvironmentVariable("DAPR_GRPC_PORT") ?? "10003";
+
+builder.Services.AddDaprClient(builder =>
+  builder.UseHttpEndpoint($"http://localhost:{httpPort}")
+         .UseGrpcEndpoint($"http://localhost:{grpcPort}")
+);
 
 WebApplication app = builder.Build();
 
@@ -17,9 +35,13 @@ if (app.Environment.IsDevelopment())
   app.UseSwaggerUI();
 }
 
+app.MapControllers();
+
+app.UseCors();
+
 app.UseCloudEvents();
 app.MapSubscribeHandler();
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.Run();

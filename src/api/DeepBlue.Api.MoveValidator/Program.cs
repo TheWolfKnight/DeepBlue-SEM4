@@ -1,7 +1,11 @@
 using System.Text.Json;
+using Dapr;
+using Dapr.Client;
 using DeepBlue.Api.MoveValidator;
 using DeepBlue.Api.MoveValidator.Services;
 using DeepBlue.Api.MoveValidator.Services.Interfaces;
+using DeepBlue.Shared.Models.Dtos;
+using Microsoft.AspNetCore.Cors;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -11,22 +15,24 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(opts =>
-  opts.AddPolicy(CorsPolicies.AllowGateway, policy =>
-    policy.WithOrigins()
-          .AllowAnyHeader()
-          .AllowAnyMethod()
-  )
-);
-
-JsonSerializerOptions jsonOptions = new JsonSerializerOptions
 {
-  AllowTrailingCommas = true,
-  PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-};
+  opts.AddDefaultPolicy(policy =>
+    policy.AllowAnyOrigin()
+          .AllowAnyHeader()
+          .AllowAnyMethod());
+});
 
 builder.Services
   .AddControllers()
-  .AddDapr(config => config.UseJsonSerializationOptions(jsonOptions));
+  .AddDapr();
+
+string httpPort = Environment.GetEnvironmentVariable("DAPR_HTTP_PORT") ?? "20002";
+string grpcPort = Environment.GetEnvironmentVariable("DAPR_GRPC_PORT") ?? "10002";
+
+builder.Services.AddDaprClient(builder =>
+  builder.UseHttpEndpoint($"http://localhost:{httpPort}")
+         .UseGrpcEndpoint($"http://localhost:{grpcPort}")
+);
 
 builder.Services.AddScoped<IFENService, FENService>();
 
@@ -41,9 +47,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseCloudEvents();
 app.MapSubscribeHandler();
+app.MapControllers();
 
-app.UseCors(CorsPolicies.AllowGateway);
-
-app.UseHttpsRedirection();
+app.UseCors();
+// app.UseHttpsRedirection();
 
 await app.RunAsync();

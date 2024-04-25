@@ -2,7 +2,7 @@
 
 @inject ITestHubConnection TestHubConn
 
-<button @onclick="@(() => TestHubConn.SendMessageAsync("Hello"))">test</button>
+<button @onclick='@(() => TestHubConn.TestThroughputAsync("Hello"))'>test</button>
 
 <PageTitle>Home</PageTitle>
 
