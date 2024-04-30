@@ -1,9 +1,9 @@
 
 using Dapr.Client;
-using Dapr;
 using DeepBlue.Shared.Models.Dtos;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.SignalR;
+
 
 namespace DeepBlue.Api.Gateway.Hubs;
 
@@ -28,10 +28,9 @@ public class TestHub : Hub
     await Task.Run(() => Console.WriteLine("=== From: Gateway.TestHub.TestThroughputAsync"));
     await Task.Run(() => Console.WriteLine($"=== Message: {dto.Message}"));
 
-    await _client.PublishEventAsync("make-move-pubsub", "throughput-test-step-1", dto);
+    await _client.PublishEventAsync("pubsub", "throughput-test-step-1", dto);
   }
 
-  [Topic("make-move-pubsub", "throughput-test-step-3")]
   public async Task TestThroughputEndAsync(ThroughputTestDto dto)
   {
     await Task.Run(() => Console.WriteLine("=== From: Gateway.TestHub.TestThroughputEndAsync"));

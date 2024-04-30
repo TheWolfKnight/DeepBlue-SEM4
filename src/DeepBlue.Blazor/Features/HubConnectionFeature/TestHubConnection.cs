@@ -14,7 +14,7 @@ public class TestHubConnection : ITestHubConnection
   public TestHubConnection()
   {
     _hubConnection = new HubConnectionBuilder()
-      .WithUrl("http://localhost:5222/testhub")
+      .WithUrl("http://localhost:80/testhub")
       .Build();
   }
 

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAspireHost>true</IsAspireHost>
+    <UserSecretsId>c8226c83-1265-4008-b5dd-4c4c01291799</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="8.0.0-preview.6.24214.1" />
+    <PackageReference Include="Aspire.Hosting.Dapr" Version="8.0.0-preview.6.24214.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\api\DeepBlue.Api.Gateway\DeepBlue.Api.Gateway.csproj" />
+    <ProjectReference Include="..\api\DeepBlue.Api.Engine\DeepBlue.Api.Engine.csproj" />
+    <ProjectReference Include="..\api\DeepBlue.Api.MoveValidator\DeepBlue.Api.MoveValidator.csproj" />
+  </ItemGroup>
+
+</Project>

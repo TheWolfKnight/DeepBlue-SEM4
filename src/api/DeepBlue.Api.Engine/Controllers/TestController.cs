@@ -19,7 +19,7 @@ public class TestController : ControllerBase
     _client = new DaprClientBuilder().Build();
   }
 
-  [Topic("make-move-pubsub", "throughput-test-step-2")]
+  [Topic("pubsub", "throughput-test-step-2")]
   [HttpPost]
   [Route("/throughputtest")]
   public async Task TestThroughputAsync(ThroughputTestDto dto)
@@ -27,7 +27,6 @@ public class TestController : ControllerBase
     await Task.Run(() => Console.WriteLine("=== From: Engine.TestController.TestThroughputAsync"));
     await Task.Run(() => Console.WriteLine($"=== Message: {dto.Message}"));
 
-    await _client.PublishEventAsync("make-move-pubsub", "throughput-test-step-3", dto);
+    await _client.PublishEventAsync("pubsub", "throughput-test-step-3", dto);
   }
-
 }
