@@ -7,25 +7,22 @@ namespace DeepBlue.Blazor.Features.HubConnectionFeature;
 
 public class TestHubConnection : ITestHubConnection
 {
-  private readonly HubConnection _hubConnection;
+  private HubConnection? _hubConnection;
 
-  public bool IsConnected { get => _hubConnection.State is HubConnectionState.Connected; }
-
-  public TestHubConnection()
-  {
-    // string url = Environment.GetEnvironmentVariable("services__gateway-service__http__0") ?? "http://localhost:80";
-
-    _hubConnection = new HubConnectionBuilder()
-      .WithUrl($"http://localhost:80/testhub")
-      .Build();
-
-    _hubConnection.On<ThroughputTestDto>("TestThroughputEndAsync", TestThroughputEndAsync);
-  }
+  public bool IsConnected { get => _hubConnection?.State is HubConnectionState.Connected; }
 
   public async Task StartAsync()
   {
     if (IsConnected)
       return;
+
+    string url = Environment.GetEnvironmentVariable("services__gateway-service__http__0") ?? "not found, is not a url";
+
+    _hubConnection = new HubConnectionBuilder()
+      .WithUrl($"{url}/testhub")
+      .Build();
+
+    _hubConnection.On<ThroughputTestDto>("TestThroughputEndAsync", TestThroughputEndAsync);
 
     await _hubConnection.StartAsync();
   }
@@ -54,6 +51,9 @@ public class TestHubConnection : ITestHubConnection
 
   public async Task TestThroughputEndAsync(ThroughputTestDto dto)
   {
+    if (_hubConnection is null)
+      return;
+
     if (_hubConnection.ConnectionId != dto.ConnectionId)
       return;
 
@@ -62,6 +62,9 @@ public class TestHubConnection : ITestHubConnection
 
   public async ValueTask DisposeAsync()
   {
+    if (_hubConnection is null)
+      return;
+
     await _hubConnection.DisposeAsync();
   }
 }
