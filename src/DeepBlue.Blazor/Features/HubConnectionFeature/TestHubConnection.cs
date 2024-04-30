@@ -13,9 +13,13 @@ public class TestHubConnection : ITestHubConnection
 
   public TestHubConnection()
   {
+    // string url = Environment.GetEnvironmentVariable("services__gateway-service__http__0") ?? "http://localhost:80";
+
     _hubConnection = new HubConnectionBuilder()
-      .WithUrl("http://localhost:80/testhub")
+      .WithUrl($"http://localhost:80/testhub")
       .Build();
+
+    _hubConnection.On<ThroughputTestDto>("TestThroughputEndAsync", TestThroughputEndAsync);
   }
 
   public async Task StartAsync()

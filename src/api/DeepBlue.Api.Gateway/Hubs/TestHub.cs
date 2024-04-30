@@ -30,12 +30,4 @@ public class TestHub : Hub
 
     await _client.PublishEventAsync("pubsub", "throughput-test-step-1", dto);
   }
-
-  public async Task TestThroughputEndAsync(ThroughputTestDto dto)
-  {
-    await Task.Run(() => Console.WriteLine("=== From: Gateway.TestHub.TestThroughputEndAsync"));
-    await Task.Run(() => Console.WriteLine($"=== Message: {dto.Message}"));
-
-    await Clients.All.SendAsync("TestThroughputEndAsync", dto);
-  }
 }

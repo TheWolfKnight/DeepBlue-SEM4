@@ -18,6 +18,6 @@
     <ProjectReference Include="..\api\DeepBlue.Api.Gateway\DeepBlue.Api.Gateway.csproj" />
     <ProjectReference Include="..\api\DeepBlue.Api.Engine\DeepBlue.Api.Engine.csproj" />
     <ProjectReference Include="..\api\DeepBlue.Api.MoveValidator\DeepBlue.Api.MoveValidator.csproj" />
+    <ProjectReference Include="..\DeepBlue.Blazor\DeepBlue.Blazor.csproj" />
   </ItemGroup>
-
 </Project>
