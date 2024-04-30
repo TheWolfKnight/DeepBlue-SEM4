@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace DeepBlue.Api.MoveValidator.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 [EnableCors]
 public class TestController : ControllerBase
 {

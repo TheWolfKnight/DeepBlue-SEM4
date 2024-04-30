@@ -27,8 +27,8 @@ public class Program
     var testHub = app.Services.GetService<ITestHubConnection>() ?? throw new Exception("Could not find ITestHubConnection instance");
     await testHub.StartAsync();
 
-    // var makeMoveHub = app.Services.GetService<IMakeMoveHubConnection>() ?? throw new Exception("Could not find IMakeMoveHubConnection instance");
-    // await makeMoveHub.StartAsync();
+    var makeMoveHub = app.Services.GetService<IMakeMoveHubConnection>() ?? throw new Exception("Could not find IMakeMoveHubConnection instance");
+    await makeMoveHub.StartAsync();
 
     await app.RunAsync();
   }

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.SignalR;
 namespace DeepBlue.Api.Gateway.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class TestController : ControllerBase
 {
   private readonly IHubContext<TestHub> _testHubContext;

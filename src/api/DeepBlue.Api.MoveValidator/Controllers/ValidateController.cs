@@ -10,7 +10,7 @@ using Dapr;
 namespace DeepBlue.Api.MoveValidator.Controllers;
 
 [Controller]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class ValidatorController : ControllerBase
 {
   private readonly IFENService _fenService;

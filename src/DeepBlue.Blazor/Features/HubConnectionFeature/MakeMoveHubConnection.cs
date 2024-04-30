@@ -7,25 +7,27 @@ namespace DeepBlue.Blazor.Features.HubConnectionFeature;
 
 public class MakeMoveHubConnection : IMakeMoveHubConnection
 {
+  private HubConnection? _hubConnection;
 
-  private readonly HubConnection _hubConnection;
+  public bool IsConnected { get => _hubConnection?.State is HubConnectionState.Connected; }
 
-  public bool IsConnected { get => _hubConnection.State is HubConnectionState.Connected; }
-
-  public MakeMoveHubConnection()
+  public async Task StartAsync()
   {
-    _hubConnection = new HubConnectionBuilder()
-      .WithUrl("https://localhost:5222/makemovehub")
-      .Build();
-  }
+    if (IsConnected)
+      return;
 
-  public async Task StartAsync() => await _hubConnection.StartAsync();
+    string url = Environment.GetEnvironmentVariable("services__gateway-service__http__0") ?? "not found, is not a url";
+
+    _hubConnection = new HubConnectionBuilder()
+      .WithUrl($"{url}/makemovehub")
+      .Build();
+
+    await _hubConnection.StartAsync();
+  }
 
   public void BindResultMethod(Action<MoveResultDto> action)
   {
-    //TODO: check for the connection id, then make sure that it is the same
-    //TODO: figure out how to let this connection live on
-    _hubConnection.On<MoveResultDto>("MakeMove", (dto) =>
+    _hubConnection?.On<MoveResultDto>("MakeMove", (dto) =>
     {
       action(dto);
     });
@@ -33,6 +35,9 @@ public class MakeMoveHubConnection : IMakeMoveHubConnection
 
   public async Task MakeMoveAsync(string fen, Point p1, Point p2)
   {
+    if (_hubConnection is null || !IsConnected)
+      return;
+
     ValidateMoveDto payload = new ValidateMoveDto
     {
       FEN = fen,
@@ -46,6 +51,9 @@ public class MakeMoveHubConnection : IMakeMoveHubConnection
 
   public async ValueTask DisposeAsync()
   {
+    if (_hubConnection is null)
+      return;
+
     await _hubConnection.DisposeAsync();
   }
 }

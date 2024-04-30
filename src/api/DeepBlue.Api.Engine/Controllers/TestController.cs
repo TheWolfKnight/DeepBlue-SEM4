@@ -8,7 +8,7 @@ using Dapr.Client;
 namespace DeepBlue.Api.Engine.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 [DisableCors]
 public class TestController : ControllerBase
 {
@@ -21,7 +21,6 @@ public class TestController : ControllerBase
 
   [Topic("pubsub", "throughput-test-step-2")]
   [HttpPost]
-  [Route("/throughputtest")]
   public async Task TestThroughputAsync(ThroughputTestDto dto)
   {
     await Task.Run(() => Console.WriteLine("=== From: Engine.TestController.TestThroughputAsync"));
