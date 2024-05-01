@@ -12,8 +12,8 @@ builder
 
 var gatewayService = builder
   .AddProject<DeepBlue_Api_Gateway>("gateway-service")
-  .WithDaprSidecar("gateway");
-// .WithHttpEndpoint(name: "gateway_access", port: 80, isProxied: false);
+  .WithDaprSidecar("gateway")
+.WithHttpEndpoint(name: "gatewayaccess", port: 80, isProxied: false);
 
 builder
   .AddProject<DeepBlue_Blazor>("frontend")

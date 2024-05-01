@@ -16,7 +16,7 @@ public class MakeMoveHubConnection : IMakeMoveHubConnection
     if (IsConnected)
       return;
 
-    string url = Environment.GetEnvironmentVariable("services__gateway-service__http__0") ?? "not found, is not a url";
+    string url = Environment.GetEnvironmentVariable("services__gateway-service__http__0") ?? "http://localhost:80";
 
     _hubConnection = new HubConnectionBuilder()
       .WithUrl($"{url}/makemovehub")
