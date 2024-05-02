@@ -27,17 +27,9 @@ public class ValidatorController : ControllerBase
   [Route("validate")]
   public async Task<IResult> ValidateMove(ValidateMoveDto dto)
   {
-    IList<IList<PieceBase>> boardState = _fenService.FENToBoard(dto.FEN);
-    Sets movingSet = _fenService.GetMovingSetFromFEN(dto.FEN);
+    bool isValidMove = _fenService.IsValidMove(dto);
 
-    PieceBase selectedPiece = boardState[dto.From.Y][dto.From.X];
-
-    if (selectedPiece is EmptyPiece || selectedPiece.PieceSet != movingSet)
-      return Results.StatusCode(406);
-
-    int[,] selectedPieceMoves = selectedPiece.GetValidMoves(boardState);
-
-    if (selectedPieceMoves[dto.To.X, dto.To.Y] is 0)
+    if (!isValidMove)
       return Results.StatusCode(406);
 
     MakeMoveDto payload = new MakeMoveDto
