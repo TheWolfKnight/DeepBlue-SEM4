@@ -16,7 +16,7 @@ public class TestHubConnection : ITestHubConnection
     if (IsConnected)
       return;
 
-    string url = Environment.GetEnvironmentVariable("services__gateway-service__gatewayaccess__0") ?? "http://localhost:80";
+    string url = Environment.GetEnvironmentVariable("services__gatewayservice__gatewayaccess__0") ?? "http://localhost:80";
 
     _hubConnection = new HubConnectionBuilder()
       .WithUrl($"{url}/testhub")

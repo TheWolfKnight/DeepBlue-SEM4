@@ -1,6 +1,7 @@
 
 using Dapr;
 using Dapr.Client;
+using DeepBlue.Shared.Models.Dtos;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +17,7 @@ public class GatewayController : ControllerBase
 
   [HttpPost]
   [Topic("pubsub", "generate-move")]
-  public async Task GenerateMove()
+  public async Task GenerateMove(MakeMoveDto dto)
   {
 
     //TODO: this

@@ -6,6 +6,7 @@ using DeepBlue.Api.MoveValidator.Services.Interfaces;
 using DeepBlue.Shared.Models.Pieces;
 using DeepBlue.Shared.Enums;
 using Dapr;
+using Dapr.Client;
 
 namespace DeepBlue.Api.MoveValidator.Controllers;
 
@@ -13,6 +14,7 @@ namespace DeepBlue.Api.MoveValidator.Controllers;
 [Route("api/[controller]")]
 public class ValidatorController : ControllerBase
 {
+  private readonly DaprClient _daprClient = new DaprClientBuilder().Build();
   private readonly IFENService _fenService;
 
   public ValidatorController(IFENService fenService)
@@ -20,9 +22,10 @@ public class ValidatorController : ControllerBase
     _fenService = fenService;
   }
 
+  [Topic("pubsub", "move-validater")]
   [HttpPut]
   [Route("validate")]
-  public IResult ValidateMove([Topic("make-move-pubsub", "move-validater")] ValidateMoveDto dto)
+  public async Task<IResult> ValidateMove(ValidateMoveDto dto)
   {
     IList<IList<PieceBase>> boardState = _fenService.FENToBoard(dto.FEN);
     Sets movingSet = _fenService.GetMovingSetFromFEN(dto.FEN);
@@ -34,8 +37,16 @@ public class ValidatorController : ControllerBase
 
     int[,] selectedPieceMoves = selectedPiece.GetValidMoves(boardState);
 
-    if (selectedPieceMoves[dto.To.X, dto.To.Y] != 0)
-      return Results.Ok();
-    return Results.StatusCode(406);
+    if (selectedPieceMoves[dto.To.X, dto.To.Y] is 0)
+      return Results.StatusCode(406);
+
+    MakeMoveDto payload = new MakeMoveDto
+    {
+      ConnectionId = dto.ConnectionId,
+      FENString = _fenService.GenerateNewFEN(dto),
+    };
+
+    await _daprClient.PublishEventAsync("pubsub", "generate-move", payload);
+    return Results.Ok();
   }
 }

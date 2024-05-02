@@ -2,6 +2,7 @@
 using Dapr.Client;
 using DeepBlue.Shared.Models.Dtos;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
 
