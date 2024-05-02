@@ -3,11 +3,20 @@ using DeepBlue.Shared.Enums;
 using DeepBlue.Shared.Models;
 using DeepBlue.Shared.Models.Pieces;
 using DeepBlue.Shared.Helpers;
+using DeepBlue.Blazor.Features.HubConnectionFeature.Interfaces;
+using DeepBlue.Shared.Models.Dtos;
 
 namespace DeepBlue.Blazor.Models;
 
 public class GameState
 {
+  private readonly IMakeMoveHubConnection _moveHubConnection;
+
+  public GameState(IMakeMoveHubConnection moveHubConnection)
+  {
+    _moveHubConnection = moveHubConnection;
+  }
+
   public string CurrentFEN { get; set; } = string.Empty;
 
   public IList<IList<PieceBase>> BoardPieces { get; set; } = new List<IList<PieceBase>>();
@@ -26,7 +35,7 @@ public class GameState
     return BoardPieces.ElementAt(y).ElementAt(x);
   }
 
-  public void MakeMove(int x, int y)
+  public async Task MakeMove(int x, int y)
   {
     if (SelectedPiece is null)
       return;
@@ -35,12 +44,18 @@ public class GameState
     BoardPieces[selectedPiecePosition[1]][selectedPiecePosition[0]] = new EmptyPiece();
     BoardPieces[y][x] = SelectedPiece;
 
-    SelectedPiece.Position = [x, y];
+    await _moveHubConnection.MakeMoveAsync(
+      CurrentFEN,
+      new Point(selectedPiecePosition[0], selectedPiecePosition[1]),
+      new Point(x, y)
+    );
 
+    SelectedPiece.Position = [x, y];
     SelectedPiece.MadeMove();
     SelectedPiece = null;
 
     CanMovePieces = CanMovePieces is Sets.White ? Sets.Black : Sets.White;
+    CurrentFEN = ConvertGameToFEN();
   }
 
   public string ConvertGameToFEN()

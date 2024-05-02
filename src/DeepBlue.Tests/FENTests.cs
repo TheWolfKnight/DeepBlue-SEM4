@@ -1,14 +1,35 @@
 
+using DeepBlue.Blazor.Features.HubConnectionFeature.Interfaces;
 using DeepBlue.Blazor.Models;
 using DeepBlue.Shared.Enums;
 using DeepBlue.Shared.Helpers;
 using DeepBlue.Shared.Models;
+using DeepBlue.Shared.Models.Dtos;
 using DeepBlue.Shared.Models.Pieces;
 
 namespace DeepBlue.Tests;
 
 public class FENTests
 {
+  private struct MakeMoveHubConnectionMock : IMakeMoveHubConnection
+  {
+    public void BindResultMethod(Action<MoveResultDto> action)
+    {
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+    }
+
+    public async Task MakeMoveAsync(string fen, Point p1, Point p2)
+    {
+    }
+
+    public async Task StartAsync()
+    {
+    }
+  }
+
   private bool ComparePieces(PieceBase a, PieceBase b)
   {
     //NOTE: if both are empty pieces, return true
@@ -69,8 +90,9 @@ public class FENTests
       Enumerable.Range(0, 8).Select(_ => (PieceBase)new PawnPiece(Sets.White)).ToList(),
       [ new RookPiece(Sets.White), new KnightPiece(Sets.White), new BishopPiece(Sets.White), new QueenPiece(Sets.White), new KingPiece(Sets.White), new BishopPiece(Sets.White), new KnightPiece(Sets.White), new RookPiece(Sets.White) ],
     ];
+    IMakeMoveHubConnection mockConnection = new MakeMoveHubConnectionMock();
 
-    GameState state = new GameState();
+    GameState state = new GameState(mockConnection);
     state.BoardPieces = board;
     state.CanMovePieces = Sets.White;
 
