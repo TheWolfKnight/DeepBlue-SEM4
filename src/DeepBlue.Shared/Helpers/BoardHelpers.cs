@@ -7,6 +7,20 @@ namespace DeepBlue.Shared.Helpers;
 
 public static class BoardHelpers
 {
+  public static Sets GetMovingSetFromFEN(string fen)
+  {
+    string[] choppedFEN = fen.Split(' ');
+
+    if (choppedFEN.Length < 6)
+      throw new InvalidOperationException("This FEN is not valid");
+
+    return choppedFEN[1] switch
+    {
+      "w" => Sets.White,
+      "b" => Sets.Black,
+      _ => throw new InvalidDataException("The second position in a FEN must be either w or b"),
+    };
+  }
 
   public static string GetPieceString(PieceBase piece)
   {

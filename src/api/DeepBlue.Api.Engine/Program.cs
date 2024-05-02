@@ -1,4 +1,6 @@
 using DeepBlue.Api.Engine;
+using DeepBlue.Api.Engine.Services;
+using DeepBlue.Api.Engine.Services.Interfaces;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +27,8 @@ builder.Services.AddDaprClient(builder =>
   builder.UseHttpEndpoint($"http://localhost:{httpPort}")
          .UseGrpcEndpoint($"http://localhost:{grpcPort}")
 );
+
+builder.Services.AddScoped<IMoveGeneratorService, MoveGeneratorService>();
 
 WebApplication app = builder.Build();
 

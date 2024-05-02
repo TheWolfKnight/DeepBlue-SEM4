@@ -5,6 +5,7 @@
 @attribute [Route(Shared.Routes.Blazor.Views.BoardView)]
 
 @inject GameState Game
+@inject IMakeMoveHubConnection MakeMoveHub
 
 <div id="board-gird">
   @for (int y = 0; y < BoardDimensions.Y; ++y)
@@ -47,16 +48,20 @@
       Game.CurrentFEN = _boardLayout;
 
     Game.BoardPieces = BoardHelpers.FENToBoard(Game.CurrentFEN);
+    MakeMoveHub.BindResultMethod((dto) => UpdateBoard(dto));
 
     await InvokeAsync(() => StateHasChanged());
   }
 
   async Task OnSquareClicked(int x, int y)
   {
+    if (Game.CanMovePieces != Game.PlayerSet)
+      return;
+
     PieceBase piece = Game.GetPiece(x, y);
 
     if (ShouldMakeMove(x, y)) {
-      Game.MakeMove(x, y);
+      await Game.MakeMove(x, y);
       highlights = new int[8,8];
 
       await InvokeAsync(() => StateHasChanged());
@@ -74,6 +79,12 @@
     Game.SelectedPiece = piece;
 
     await InvokeAsync(() => StateHasChanged());
+  }
+
+  void UpdateBoard(MoveResultDto dto)
+  {
+    Game.BoardPieces = BoardHelpers.FENToBoard(dto.FEN);
+    Game.CanMovePieces = BoardHelpers.GetMovingSetFromFEN(dto.FEN);
   }
 
   string GetPieceGraphic(int x, int y)

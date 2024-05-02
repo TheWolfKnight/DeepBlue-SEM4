@@ -1,6 +1,7 @@
 
 using Dapr;
 using DeepBlue.Api.Gateway.Hubs;
+using DeepBlue.Shared.Models.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
@@ -18,9 +19,8 @@ public class MakeMoveController : ControllerBase
   }
 
   [Topic("pubsub", "send-move-to-client")]
-  public async Task SendMoveToClientAsync()
+  public async Task SendMoveToClientAsync(MakeMoveDto dto)
   {
-    //TODO: this
-    await _moveHubContext.Clients.Client("").SendAsync("");
+    await _moveHubContext.Clients.Client(dto.ConnectionId).SendAsync("UpdateBoardState", dto);
   }
 }

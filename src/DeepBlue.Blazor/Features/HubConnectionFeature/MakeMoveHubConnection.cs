@@ -9,6 +9,8 @@ public class MakeMoveHubConnection : IMakeMoveHubConnection
 {
   private HubConnection? _hubConnection;
 
+  private Action<MoveResultDto>? _onMoveResult;
+
   public bool IsConnected { get => _hubConnection?.State is HubConnectionState.Connected; }
 
   public async Task StartAsync()
@@ -27,10 +29,7 @@ public class MakeMoveHubConnection : IMakeMoveHubConnection
 
   public void BindResultMethod(Action<MoveResultDto> action)
   {
-    _hubConnection?.On<MoveResultDto>("MakeMove", (dto) =>
-    {
-      action(dto);
-    });
+    _onMoveResult = action;
   }
 
   public async Task MakeMoveAsync(string fen, Point p1, Point p2)
@@ -47,6 +46,14 @@ public class MakeMoveHubConnection : IMakeMoveHubConnection
     };
 
     await _hubConnection.SendAsync("ValidateMove", payload);
+  }
+
+  public void UpdateBoardState(MoveResultDto dto)
+  {
+    if (dto.ConnectionId != _hubConnection?.ConnectionId || _onMoveResult is null)
+      return;
+
+    _onMoveResult(dto);
   }
 
   public async ValueTask DisposeAsync()
