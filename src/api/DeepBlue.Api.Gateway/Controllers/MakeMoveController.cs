@@ -24,6 +24,7 @@ public class MakeMoveController : ControllerBase
   [Topic("pubsub", "send-move-to-client")]
   public async Task SendMoveToClientAsync(MoveResultDto dto)
   {
-    await _moveHubContext.Clients.All.SendAsync("UpdateBoardState", dto);
+    Console.WriteLine("Sending to client");
+    await _moveHubContext.Clients.All.SendAsync("UpdateBoardStateAsync", dto);
   }
 }

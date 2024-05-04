@@ -1,4 +1,6 @@
 
+using DeepBlue.Shared.Enums;
+
 namespace DeepBlue.Shared.Models.Dtos;
 
 public class MakeMoveDto

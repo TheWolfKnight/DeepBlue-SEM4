@@ -65,4 +65,23 @@ public class ValidationTests
     // Assert
     Assert.True(result);
   }
+
+  [Fact]
+  public void WhiteMovesPawn_ValidMove_ValidSet_Test()
+  {
+    // Arrange
+    FENService service = new FENService();
+
+    string fen = "rnbqkbnr/ppppppp1/7p/8/8/3P4/PPP1PPPP/RNBQKBNR w KQkq - 0 1";
+    Point from = new Point(5, 6);
+    Point to = new Point(5, 5);
+    IList<IList<PieceBase>> boardState = FENHelpers.FENToBoard(fen);
+    Sets movingSet = FENHelpers.GetMovingSetFromFEN(fen);
+
+    // Act
+    bool result = service.IsValidMove(boardState, movingSet, from, to);
+
+    // Assert
+    Assert.True(result);
+  }
 }

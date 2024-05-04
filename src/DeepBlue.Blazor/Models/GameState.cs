@@ -50,11 +50,12 @@ public class GameState
       new Point(x, y)
     );
 
+    CanMovePieces = CanMovePieces is Sets.White ? Sets.Black : Sets.White;
+
     SelectedPiece.Position = [x, y];
     SelectedPiece.MadeMove();
     SelectedPiece = null;
 
-    CanMovePieces = CanMovePieces is Sets.White ? Sets.Black : Sets.White;
     CurrentFEN = ConvertGameToFEN();
   }
 

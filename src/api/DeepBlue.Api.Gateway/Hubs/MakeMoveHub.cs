@@ -13,6 +13,7 @@ public class MakeMoveHub : Hub
 
   public async Task MakeMoveAsync(ValidateMoveDto dto)
   {
+    Console.WriteLine("Here");
     await _daprClient.PublishEventAsync("pubsub", "validate-move", dto);
   }
 }

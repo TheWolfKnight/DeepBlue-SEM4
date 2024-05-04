@@ -85,29 +85,32 @@ public static class FENHelpers
   private static string GetRankString(IList<PieceBase> rank)
   {
     string result = string.Empty;
+    IEnumerator<PieceBase> pieces = rank.GetEnumerator();
 
-    IEnumerator<PieceBase> columns = rank.GetEnumerator();
-
-    while (columns.MoveNext())
+    while (pieces.MoveNext())
     {
-      PieceBase piece = columns.Current;
 
-      if (piece is EmptyPiece)
+      int n = 0;
+      while (pieces.Current is EmptyPiece)
       {
-        int n = 1;
-        while (columns.Current is EmptyPiece)
+        PieceBase piece = pieces.Current;
+
+        if (!pieces.MoveNext())
         {
-          if (!columns.MoveNext())
-          {
-            result += n;
-            return result;
-          }
-          n++;
+          if (piece is EmptyPiece)
+            n++;
+
+          result += n;
+          return result;
         }
-        result += n;
+
+        n++;
       }
-      else
-        result += piece.GetPieceLetter();
+
+      if (n > 0)
+        result += n;
+
+      result += pieces.Current.GetPieceLetter();
     }
 
     return result;

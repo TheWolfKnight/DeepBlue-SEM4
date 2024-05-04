@@ -17,7 +17,15 @@ public class PawnPiece : PieceBase
   public override int[] Position
   {
     get => _position;
-    set => _position = value;
+    set
+    {
+      int yPosition = value[1];
+
+      if ((_set is Sets.Black && yPosition is not 1) || (_set is Sets.White && yPosition is not 6))
+        _firstMove = false;
+
+      _position = value;
+    }
   }
 
   public PawnPiece(Sets set)

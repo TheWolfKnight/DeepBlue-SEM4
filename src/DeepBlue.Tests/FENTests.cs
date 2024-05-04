@@ -13,7 +13,7 @@ public class FENTests
 {
   private struct MakeMoveHubConnectionMock : IMakeMoveHubConnection
   {
-    public void BindResultMethod(Action<MoveResultDto> action)
+    public void BindResultMethod(Func<MoveResultDto, Task> action)
     {
     }
 

@@ -30,6 +30,8 @@ public class ValidatorController : ControllerBase
   [Topic("pubsub", "validate-move", false)]
   public async Task ValidateMoveAsync(ValidateMoveDto dto)
   {
+    Console.WriteLine(dto.FEN);
+
     IList<IList<PieceBase>> boardState = FENHelpers.FENToBoard(dto.FEN);
     Sets movingSet = FENHelpers.GetMovingSetFromFEN(dto.FEN);
 
@@ -37,12 +39,17 @@ public class ValidatorController : ControllerBase
 
     //TODO: send result back, to roll back the board
     if (!isValidMove)
+    {
+      Console.WriteLine("Move was invalid");
       return;
+    }
+
+    Console.WriteLine("Move was valid");
 
     MakeMoveDto payload = new MakeMoveDto
     {
       ConnectionId = dto.ConnectionId,
-      FENString = _fenService.GenerateNewFEN(boardState, movingSet, dto.From, dto.To),
+      FENString = _fenService.GenerateNewFEN(boardState, movingSet is Sets.White ? Sets.Black : Sets.White, dto.From, dto.To),
     };
 
     await _client.PublishEventAsync("pubsub", "generate-move", payload);

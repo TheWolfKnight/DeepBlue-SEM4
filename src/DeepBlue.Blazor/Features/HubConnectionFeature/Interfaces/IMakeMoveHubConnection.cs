@@ -9,5 +9,5 @@ public interface IMakeMoveHubConnection : IAsyncDisposable
 
   Task MakeMoveAsync(string fen, Point p1, Point p2);
 
-  void BindResultMethod(Action<MoveResultDto> action);
+  void BindResultMethod(Func<MoveResultDto, Task> action);
 }

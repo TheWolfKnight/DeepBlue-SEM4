@@ -9,7 +9,7 @@ public class MakeMoveHubConnection : IMakeMoveHubConnection
 {
   private HubConnection? _hubConnection;
 
-  private Action<MoveResultDto>? _onMoveResult;
+  private Func<MoveResultDto, Task>? _onMoveResult;
 
   public bool IsConnected { get => _hubConnection?.State is HubConnectionState.Connected; }
 
@@ -24,12 +24,12 @@ public class MakeMoveHubConnection : IMakeMoveHubConnection
       .WithUrl($"{url}/makemovehub")
       .Build();
 
-    _hubConnection.On<MoveResultDto>("SendMoveToClientAsync", UpdateBoardState);
+    _hubConnection.On<MoveResultDto>("UpdateBoardStateAsync", UpdateBoardStateAsync);
 
     await _hubConnection.StartAsync();
   }
 
-  public void BindResultMethod(Action<MoveResultDto> action)
+  public void BindResultMethod(Func<MoveResultDto, Task> action)
   {
     _onMoveResult = action;
   }
@@ -50,12 +50,14 @@ public class MakeMoveHubConnection : IMakeMoveHubConnection
     await _hubConnection.SendAsync("MakeMoveAsync", payload);
   }
 
-  public void UpdateBoardState(MoveResultDto dto)
+  public async Task UpdateBoardStateAsync(MoveResultDto dto)
   {
+    Console.WriteLine("Here");
+
     if (dto.ConnectionId != _hubConnection?.ConnectionId || _onMoveResult is null)
       return;
 
-    _onMoveResult(dto);
+    await _onMoveResult(dto);
   }
 
   public async ValueTask DisposeAsync()
