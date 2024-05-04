@@ -7,8 +7,8 @@ namespace DeepBlue.Api.MoveValidator.Services.Interfaces;
 
 public interface IFENService
 {
-  bool IsValidMove(ValidateMoveDto dto);
-  IList<IList<PieceBase>> FENToBoard(string fen);
-  Sets GetMovingSetFromFEN(string fen);
-  string GenerateNewFEN(ValidateMoveDto dto);
+  bool IsValidMove(IList<IList<PieceBase>> boardState, Sets movingSet,
+                   Point from, Point to);
+
+  string GenerateNewFEN(IList<IList<PieceBase>> boardState, Sets movingSet, Point from, Point to);
 }

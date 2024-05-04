@@ -10,43 +10,25 @@ namespace DeepBlue.Api.MoveValidator.Services;
 
 public class FENService : IFENService
 {
-  public bool IsValidMove(ValidateMoveDto dto)
+  public bool IsValidMove(IList<IList<PieceBase>> boardState, Sets movingSet,
+                          Point from, Point to)
   {
-    IList<IList<PieceBase>> boardState = FENToBoard(dto.FEN);
-    Sets movingSet = GetMovingSetFromFEN(dto.FEN);
-
-    PieceBase selectedPiece = boardState[dto.From.Y][dto.From.X];
+    PieceBase selectedPiece = boardState[from.Y][from.X];
 
     if (selectedPiece is EmptyPiece || selectedPiece.PieceSet != movingSet)
       return false;
 
     int[,] selectedPieceMoves = selectedPiece.GetValidMoves(boardState);
 
-    return selectedPieceMoves[dto.To.X, dto.To.Y] is not 0;
+    return selectedPieceMoves[to.X, to.Y] is not 0;
   }
 
-  public IList<IList<PieceBase>> FENToBoard(string fenString)
+  public string GenerateNewFEN(IList<IList<PieceBase>> boardState, Sets movingSet,
+                          Point from, Point to)
   {
-    return BoardHelpers.FENToBoard(fenString);
-  }
+    boardState[to.Y][to.X] = boardState[from.Y][from.X];
+    boardState[from.Y][from.X] = new EmptyPiece();
 
-  public Sets GetMovingSetFromFEN(string fen)
-  {
-    string[] choppedFEN = fen.Split(' ');
-
-    if (choppedFEN.Length < 6)
-      throw new InvalidOperationException("This FEN is not valid");
-
-    return choppedFEN[1] switch
-    {
-      "w" => Sets.White,
-      "b" => Sets.Black,
-      _ => throw new InvalidDataException("The second position in a FEN must be either w or b"),
-    };
-  }
-
-  public string GenerateNewFEN(ValidateMoveDto dot)
-  {
-    throw new NotImplementedException();
+    return FENHelpers.ConvertGameToFEN(boardState, movingSet);
   }
 }

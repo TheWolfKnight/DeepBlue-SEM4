@@ -39,13 +39,11 @@ if (app.Environment.IsDevelopment())
   app.UseSwaggerUI();
 }
 
-app.MapControllers();
 
 app.UseCors();
 
 app.UseCloudEvents();
 app.MapSubscribeHandler();
-
-// app.UseHttpsRedirection();
+app.MapControllers();
 
 app.Run();

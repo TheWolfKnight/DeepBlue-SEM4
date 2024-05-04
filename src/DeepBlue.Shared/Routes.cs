@@ -8,7 +8,7 @@ public static class Routes
   {
 
     public const string Index = "/index";
-    public const string SavedGames = "/savegames";
+    public const string Tests = "/tests";
 
     public static class Views
     {

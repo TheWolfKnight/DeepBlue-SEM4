@@ -1,0 +1,20 @@
+
+@attribute [Route(Routes.Blazor.Tests)]
+
+@inject ITestHubConnection HubConnection
+
+<h3> Tests </h3>
+
+<InputText @bind-Value="@textInputValue" />
+
+<div id="echo-tests">
+  <button @onclick="@(() => HubConnection.SendMessageAsync(textInputValue))">Send echo</button>
+</div>
+
+<div id="throughput-test">
+  <button onclick="@(() => HubConnection.TestThroughputAsync(textInputValue))">Throughput test</button>
+</div>
+
+@code {
+  string textInputValue = string.Empty;
+}

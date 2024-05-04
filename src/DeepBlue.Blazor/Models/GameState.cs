@@ -106,6 +106,7 @@ public class GameState
 
           n++;
         }
+        continue;
       }
 
       result += piece.GetPieceLetter();

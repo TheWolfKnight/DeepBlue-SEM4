@@ -53,7 +53,4 @@ app.MapControllers();
 
 app.UseCors();
 
-// app.UseHttpsRedirection();
-app.UseResponseCompression();
-
 await app.RunAsync();

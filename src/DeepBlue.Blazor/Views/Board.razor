@@ -47,7 +47,7 @@
     else
       Game.CurrentFEN = _boardLayout;
 
-    Game.BoardPieces = BoardHelpers.FENToBoard(Game.CurrentFEN);
+    Game.BoardPieces = FENHelpers.FENToBoard(Game.CurrentFEN);
     MakeMoveHub.BindResultMethod((dto) => UpdateBoard(dto));
 
     await InvokeAsync(() => StateHasChanged());
@@ -83,14 +83,14 @@
 
   void UpdateBoard(MoveResultDto dto)
   {
-    Game.BoardPieces = BoardHelpers.FENToBoard(dto.FEN);
-    Game.CanMovePieces = BoardHelpers.GetMovingSetFromFEN(dto.FEN);
+    Game.BoardPieces = FENHelpers.FENToBoard(dto.FEN);
+    Game.CanMovePieces = FENHelpers.GetMovingSetFromFEN(dto.FEN);
   }
 
   string GetPieceGraphic(int x, int y)
   {
     PieceBase piece = Game.GetPiece(x, y);
-    return BoardHelpers.GetPieceString(piece);
+    return PieceHelpers.GetPieceString(piece);
   }
 
   bool ShouldMakeMove(int x, int y) => Game.SelectedPiece is not null && highlights[x, y] != 0;

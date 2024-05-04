@@ -5,22 +5,8 @@ using DeepBlue.Shared.Models.Pieces;
 
 namespace DeepBlue.Shared.Helpers;
 
-public static class BoardHelpers
+public static class PieceHelpers
 {
-  public static Sets GetMovingSetFromFEN(string fen)
-  {
-    string[] choppedFEN = fen.Split(' ');
-
-    if (choppedFEN.Length < 6)
-      throw new InvalidOperationException("This FEN is not valid");
-
-    return choppedFEN[1] switch
-    {
-      "w" => Sets.White,
-      "b" => Sets.Black,
-      _ => throw new InvalidDataException("The second position in a FEN must be either w or b"),
-    };
-  }
 
   public static string GetPieceString(PieceBase piece)
   {
@@ -34,46 +20,6 @@ public static class BoardHelpers
       KingPiece => "king_" + GetColor(piece.PieceSet) + ".png",
       _ => "",
     };
-
-    return result;
-  }
-
-  public static IList<IList<PieceBase>> FENToBoard(string fenString)
-  {
-    string[] notationPieces = fenString.Split(' ');
-    string[] ranks = notationPieces[0].Split('/');
-
-    List<IList<PieceBase>> result = new List<IList<PieceBase>>();
-
-    for (int i = 0; i < ranks.Length; ++i)
-    {
-      List<PieceBase> rank = new List<PieceBase>();
-
-      int x = 0;
-
-      for (int j = 0; j < ranks[i].Length; ++j)
-      {
-        char instruction = ranks[i][j];
-
-        if (char.IsDigit(instruction))
-        {
-          int num = int.Parse(instruction.ToString());
-          IList<PieceBase> emptySlots = GetEmptySlots(num);
-          rank = rank
-            .Concat(emptySlots)
-            .ToList();
-          x += num;
-          continue;
-        }
-
-        PieceBase piece = GetPieceFromChar(instruction);
-        piece.Position = [x, i];
-        x++;
-        rank.Add(piece);
-      }
-
-      result.Add(rank);
-    }
 
     return result;
   }
@@ -95,12 +41,12 @@ public static class BoardHelpers
     return chr;
   }
 
-  private static string GetColor(Sets set)
+  public static string GetColor(Sets set)
   {
     return set is Sets.White ? "white" : "black";
   }
 
-  private static List<PieceBase> GetEmptySlots(int num)
+  public static List<PieceBase> GetEmptySlots(int num)
   {
     return Enumerable
       .Range(0, num)
@@ -108,7 +54,7 @@ public static class BoardHelpers
       .ToList();
   }
 
-  private static PieceBase GetPieceFromChar(char piece)
+  public static PieceBase GetPieceFromChar(char piece)
   {
     ConstructorInfo constructor = GetPieceConstructor(piece);
     Sets set = char.IsUpper(piece) ? Sets.White : Sets.Black;

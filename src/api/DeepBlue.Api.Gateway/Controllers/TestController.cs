@@ -24,6 +24,6 @@ public class TestController : ControllerBase
     await Task.Run(() => Console.WriteLine("=== From: Gateway.TestController.TestThroughputEndAsync"));
     await Task.Run(() => Console.WriteLine($"=== Message: {dto.Message}"));
 
-    await _testHubContext.Clients.Client(dto.ConnectionId).SendAsync("TestThroughputEndAsync", dto);
+    await _testHubContext.Clients.All.SendAsync("TestThroughputEndAsync", dto);
   }
 }

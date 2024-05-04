@@ -50,6 +50,5 @@ app.MapSubscribeHandler();
 app.MapControllers();
 
 app.UseCors();
-// app.UseHttpsRedirection();
 
 await app.RunAsync();

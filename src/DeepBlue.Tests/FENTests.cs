@@ -62,7 +62,7 @@ public class FENTests
     ];
 
     // Act
-    IList<IList<PieceBase>> actualResult = BoardHelpers.FENToBoard(fen);
+    IList<IList<PieceBase>> actualResult = FENHelpers.FENToBoard(fen);
 
     // Assert
     bool areEqual = actualResult

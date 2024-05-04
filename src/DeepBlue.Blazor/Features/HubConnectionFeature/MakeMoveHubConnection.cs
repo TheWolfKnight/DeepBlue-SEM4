@@ -24,6 +24,8 @@ public class MakeMoveHubConnection : IMakeMoveHubConnection
       .WithUrl($"{url}/makemovehub")
       .Build();
 
+    _hubConnection.On<MoveResultDto>("SendMoveToClientAsync", UpdateBoardState);
+
     await _hubConnection.StartAsync();
   }
 
@@ -45,7 +47,7 @@ public class MakeMoveHubConnection : IMakeMoveHubConnection
       ConnectionId = _hubConnection.ConnectionId ?? string.Empty
     };
 
-    await _hubConnection.SendAsync("ValidateMove", payload);
+    await _hubConnection.SendAsync("MakeMoveAsync", payload);
   }
 
   public void UpdateBoardState(MoveResultDto dto)
