@@ -1,5 +1,6 @@
 
 using System;
+using System.Security.Cryptography;
 using DeepBlue.Api.Engine.Services.Interfaces;
 using DeepBlue.Shared.Enums;
 using DeepBlue.Shared.Helpers;
@@ -16,9 +17,23 @@ public class MoveGeneratorService : IMoveGeneratorService
     return GenerateRandomMove(dto);
   }
 
-  private int CalculateBoardValue(string boardStateFEN)
+  private int CalculateBoardValue(IList<IList<PieceBase>> boardState)
   {
-    return 0;
+    Func<PieceBase, int> getPieceValue = (PieceBase piece) =>
+    {
+      return piece switch
+      {
+        KingPiece => int.MaxValue,
+        QueenPiece => 9,
+        RookPiece => 5,
+        BishopPiece or KnightPiece => 3,
+        PawnPiece => 1,
+        EmptyPiece => 0,
+        _ => throw new Exception("Unrechable code"),
+      } * (piece.PieceSet is Sets.White ? 1 : -1);
+    };
+
+    return boardState.Sum(rank => rank.Sum(getPieceValue));
   }
 
   private IList<IList<PieceBase>> MakeMove(IList<IList<PieceBase>> boardState, PieceBase piece, Point to)
@@ -30,6 +45,8 @@ public class MoveGeneratorService : IMoveGeneratorService
   {
     IList<IList<PieceBase>> boardState = FENHelpers.FENToBoard(dto.FENString);
     Sets movingSet = FENHelpers.GetMovingSetFromFEN(dto.FENString);
+
+    Console.WriteLine($"FEN value {CalculateBoardValue(boardState)}");
 
     Random rng = new Random(Guid.NewGuid().GetHashCode());
 
@@ -50,7 +67,6 @@ public class MoveGeneratorService : IMoveGeneratorService
       {
         for (int y = 0; y < 8; ++y)
         {
-          Console.WriteLine("X: " + x + " Y: " + y);
           if (validMoves[x, y] is not 0)
             moves.Add(new Point(X: x, Y: y));
         }
