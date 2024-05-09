@@ -21,16 +21,18 @@ public class MoveGeneratorService : IMoveGeneratorService
   {
     Func<PieceBase, int> getPieceValue = (PieceBase piece) =>
     {
+      if (piece is EmptyPiece)
+        return 0;
+
       return piece switch
       {
-        KingPiece => int.MaxValue,
+        KingPiece => 0,
         QueenPiece => 9,
         RookPiece => 5,
         BishopPiece or KnightPiece => 3,
         PawnPiece => 1,
-        EmptyPiece => 0,
         _ => throw new Exception("Unrechable code"),
-      } * (piece.PieceSet is Sets.White ? 1 : -1);
+      } * (int)piece.PieceSet;
     };
 
     return boardState.Sum(rank => rank.Sum(getPieceValue));
@@ -46,44 +48,40 @@ public class MoveGeneratorService : IMoveGeneratorService
     IList<IList<PieceBase>> boardState = FENHelpers.FENToBoard(dto.FENString);
     Sets movingSet = FENHelpers.GetMovingSetFromFEN(dto.FENString);
 
-    Console.WriteLine($"FEN value {CalculateBoardValue(boardState)}");
-
     Random rng = new Random(Guid.NewGuid().GetHashCode());
 
     IEnumerable<PieceBase> pieces = new List<PieceBase>();
     foreach (IList<PieceBase> rank in boardState)
-      pieces = pieces.Concat(rank.Where(piece => piece is not EmptyPiece && piece.PieceSet == movingSet));
+      pieces = pieces.Concat(
+        rank
+        .Where(piece => piece is not EmptyPiece && piece.PieceSet == movingSet)
+        .Where(piece => piece.PieceHasValidMove(boardState))
+      );
+
+    if (!pieces.Any())
+      return new MoveResultDto
+      {
+        ConnectionId = dto.ConnectionId,
+        FEN = dto.FENString
+      };
 
     Point choosenMove;
     PieceBase piece;
 
-    while (true)
+    piece = pieces.ElementAt(rng.Next(0, pieces.Count()));
+
+    int[,] validMoves = piece.GetValidMoves(boardState);
+    List<Point> moves = new List<Point>();
+    for (int x = 0; x < 8; ++x)
     {
-      piece = pieces.ElementAt(rng.Next(0, pieces.Count()));
-
-      int[,] validMoves = piece.GetValidMoves(boardState);
-      List<Point> moves = new List<Point>();
-      for (int x = 0; x < 8; ++x)
+      for (int y = 0; y < 8; ++y)
       {
-        for (int y = 0; y < 8; ++y)
-        {
-          if (validMoves[x, y] is not 0)
-            moves.Add(new Point(X: x, Y: y));
-        }
-      }
-
-      try
-      {
-        choosenMove = moves[rng.Next(0, moves.Count)];
-        break;
-      }
-      catch (Exception)
-      {
-
+        if (validMoves[x, y] is not 0)
+          moves.Add(new Point(X: x, Y: y));
       }
     }
 
-    Console.WriteLine($"Moving: {(piece.PieceSet is Sets.White ? "w" : "b")} {piece.GetType().Name} from X: {piece.Position[0]} Y: {piece.Position[1]}\nTo X: {choosenMove.X} Y: {choosenMove.Y}");
+    choosenMove = moves[rng.Next(0, moves.Count)];
 
     boardState[choosenMove.Y][choosenMove.X] = boardState[piece.Position[1]][piece.Position[0]];
     boardState[piece.Position[1]][piece.Position[0]] = new EmptyPiece();
@@ -94,4 +92,5 @@ public class MoveGeneratorService : IMoveGeneratorService
       ConnectionId = dto.ConnectionId,
     };
   }
+
 }

@@ -61,6 +61,22 @@ public static class PieceHelpers
     return (PieceBase)constructor.Invoke([set]);
   }
 
+  public static bool PieceHasValidMove(this PieceBase piece, IList<IList<PieceBase>> boardState)
+  {
+    int[,] validMoves = piece.GetValidMoves(boardState);
+
+    for (int x = 0; x < 8; ++x)
+    {
+      for (int y = 0; y < 8; ++y)
+      {
+        if (validMoves[x, y] is not 0)
+          return true;
+      }
+    }
+
+    return false;
+  }
+
   private static ConstructorInfo GetPieceConstructor(char piece)
   {
     Type type = char.ToLower(piece) switch
