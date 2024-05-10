@@ -8,16 +8,16 @@ namespace DeepBlue.Api.Engine.Models;
 
 public class Board
 {
-  public string OriginalFEN { get; set; } = string.Empty;
-
+  public string CurrentFEN { get; set; } = string.Empty;
   public IList<IList<PieceBase>> BoardState { get; set; } = Array.Empty<IList<PieceBase>>();
   public Sets MoveingSet { get; set; }
 
   //TODO: make attack mapes for opponant
+  public int[,] EnemyAttacks;
 
   public Board(string fen)
   {
-    OriginalFEN = fen;
+    CurrentFEN = fen;
     BoardState = FENHelpers.FENToBoard(fen);
     MoveingSet = FENHelpers.GetMovingSetFromFEN(fen);
   }
@@ -26,6 +26,10 @@ public class Board
   {
     BoardState[move.To.Y][move.To.X] = move.Piece;
     BoardState[move.From.Y][move.From.X] = new EmptyPiece();
+
+    CurrentFEN = FENHelpers.ConvertGameToFEN(BoardState, MoveingSet);
+
+    move.Piece.MadeMove();
 
     move.Piece.Position = [move.To.X, move.To.Y];
     MoveingSet = MoveingSet is Sets.White ? Sets.Black : Sets.White;
@@ -36,7 +40,20 @@ public class Board
     BoardState[move.From.Y][move.From.X] = move.Piece;
     BoardState[move.To.Y][move.To.X] = move.CapturedPiece;
 
+    CurrentFEN = FENHelpers.ConvertGameToFEN(BoardState, MoveingSet);
+
     move.Piece.Position = [move.From.X, move.From.Y];
     MoveingSet = MoveingSet is Sets.White ? Sets.Black : Sets.White;
+  }
+
+  private void GenerateAttakcs()
+  {
+    foreach (IList<PieceBase> rank in BoardState)
+    {
+      foreach (PieceBase piece in rank)
+      {
+
+      }
+    }
   }
 }

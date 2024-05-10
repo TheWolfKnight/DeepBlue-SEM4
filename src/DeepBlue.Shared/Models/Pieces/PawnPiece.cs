@@ -21,8 +21,7 @@ public class PawnPiece : PieceBase
     {
       int yPosition = value[1];
 
-      if ((_set is Sets.Black && yPosition is not 1) || (_set is Sets.White && yPosition is not 6))
-        _firstMove = false;
+      _firstMove = (_set is Sets.Black && yPosition is 1) || (_set is Sets.White && yPosition is 6);
 
       _position = value;
     }
@@ -98,5 +97,10 @@ public class PawnPiece : PieceBase
   public override void MadeMove()
   {
     _firstMove = false;
+  }
+
+  public override string ToString()
+  {
+    return $"PawnPiece(Set={(_set is Sets.White ? "w" : "b")}, FirstMove={_firstMove})";
   }
 }

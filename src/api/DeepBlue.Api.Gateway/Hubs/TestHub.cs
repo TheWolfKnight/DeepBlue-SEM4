@@ -31,4 +31,9 @@ public class TestHub : Hub
 
     await _client.PublishEventAsync("pubsub", "throughput-test-step-1", dto);
   }
+
+  public async Task CountMovesAsync(MakeMoveDto dto)
+  {
+    await _client.PublishEventAsync("pubsub", "count-moves-test", dto);
+  }
 }

@@ -60,6 +60,14 @@ public class TestHubConnection : ITestHubConnection
     await Task.Run(() => Console.WriteLine(dto.Message));
   }
 
+  public async Task CountMovesTest(MakeMoveDto dto)
+  {
+    if (_hubConnection is null || !IsConnected)
+      return;
+
+    await _hubConnection.SendAsync("CountMovesAsync", dto);
+  }
+
   public async ValueTask DisposeAsync()
   {
     if (_hubConnection is null)

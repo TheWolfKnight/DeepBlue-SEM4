@@ -2,6 +2,7 @@
 using DeepBlue.Api.Engine.Enums;
 using DeepBlue.Api.Engine.Models;
 using DeepBlue.Api.Engine.Services.Interfaces;
+using DeepBlue.Shared.Enums;
 using DeepBlue.Shared.Models;
 using DeepBlue.Shared.Models.Dtos;
 using DeepBlue.Shared.Models.Pieces;
@@ -18,7 +19,23 @@ public class MinMaxMoveGenerator : IMoveGeneratorService
   {
     _board = new Board(dto.FENString);
 
-    throw new NotImplementedException();
+    return new MoveResultDto
+    {
+      ConnectionId = dto.ConnectionId,
+      FEN = dto.FENString
+    };
+  }
+
+  public void CountMoves(MakeMoveDto dto)
+  {
+    _board = new Board(dto.FENString);
+    for (int i = 1; i <= 2; ++i)
+    {
+      Console.WriteLine("depth: " + i);
+      int result = PureSearch(i);
+
+      Console.WriteLine($"== Positions Counted: {result}");
+    }
   }
 
   private int CalculateBoardValue(IList<IList<PieceBase>> boardState)
@@ -49,32 +66,34 @@ public class MinMaxMoveGenerator : IMoveGeneratorService
       throw new InvalidOperationException("The board should not be null at this state, Unrechable code");
 
     if (depth is 0)
-      return 0; //TODO: Evaluate when here
+      return 1; //TODO: Evaluate when here
 
     IEnumerable<Move> moves = GenerateAvaliableMoves();
 
-    if (moves.Count() is 0)
-    {
-      //TODO: check for checkmate
-      return 0; //NOTE: Stalemate
-    }
+    // if (moves.Count() is 0)
+    // {
+    //   //TODO: check for checkmate
+    //   return 0; //NOTE: Stalemate
+    // }
 
     int bestEvaluation = int.MinValue;
+    int numPositions = 0;
 
     foreach (Move move in moves)
     {
+      Console.WriteLine(move);
       //NOTE: makes move on board
       _board.MakeMove(move);
 
       //NOTE: searches the new position for best move. If found; make this the new best evaluation
-      int moveEvaluation = PureSearch(depth - 1);
-      bestEvaluation = Math.Max(moveEvaluation, bestEvaluation);
+      numPositions += PureSearch(depth - 1);
+      // bestEvaluation = Math.Max(moveEvaluation, bestEvaluation);
 
       //NOTE: removes the move from the board, to make ready for the next check
       _board.UnmakeMove(move);
     }
 
-    return bestEvaluation;
+    return numPositions;
   }
 
   private IEnumerable<Move> PredictGoodMoves(IEnumerable<Move> generatedMoves)
@@ -111,6 +130,40 @@ public class MinMaxMoveGenerator : IMoveGeneratorService
     return results;
   }
 
+  private bool IsCheckmate()
+  {
+    if (_board is null)
+      throw new InvalidOperationException("The board should not be null at this state, Unrechable code");
+
+    IList<IList<PieceBase>> boardState = _board.BoardState;
+    Sets movingSet = _board.MoveingSet;
+
+    KingPiece? king = null;
+    bool found = false;
+
+    foreach (IList<PieceBase> rank in boardState)
+    {
+      if (found)
+        break;
+
+      foreach (PieceBase piece in rank)
+      {
+        if (piece is KingPiece kp && piece.PieceSet == movingSet)
+        {
+          king = kp;
+          found = true;
+          break;
+        }
+      }
+    }
+
+    //NOTE: if no king, the game is over
+    if (king is null)
+      return true;
+
+    return false;
+  }
+
   private List<Move> GetPieceMoves(PieceBase piece)
   {
     if (_board is null)
@@ -122,6 +175,9 @@ public class MinMaxMoveGenerator : IMoveGeneratorService
     for (int x = 0; x < 8; ++x)
       for (int y = 0; y < 8; ++y)
       {
+        if (pieceMoves[x, y] is 0)
+          continue;
+
         Move move = new Move
         {
           Piece = piece,

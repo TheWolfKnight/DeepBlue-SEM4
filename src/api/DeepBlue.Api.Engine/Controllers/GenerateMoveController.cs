@@ -21,7 +21,7 @@ public class GenerateMoveController : ControllerBase
   public GenerateMoveController(IMoveGeneratorFactory factory)
   {
     _client = new DaprClientBuilder().Build();
-    _moveGenerator = factory.GetMoveGeneratorService(GeneratorTypes.Random);
+    _moveGenerator = factory.GetMoveGeneratorService(GeneratorTypes.MinMax);
   }
 
   [HttpPost]
