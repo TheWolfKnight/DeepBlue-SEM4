@@ -1,6 +1,7 @@
 
 using System;
 using System.Security.Cryptography;
+using DeepBlue.Api.Engine.Enums;
 using DeepBlue.Api.Engine.Services.Interfaces;
 using DeepBlue.Shared.Enums;
 using DeepBlue.Shared.Helpers;
@@ -10,8 +11,10 @@ using DeepBlue.Shared.Models.Pieces;
 
 namespace DeepBlue.Api.Engine.Services;
 
-public class MoveGeneratorService : IMoveGeneratorService
+public class RandomMoveGeneratorService : IMoveGeneratorService
 {
+  public GeneratorTypes GeneratorType { get => GeneratorTypes.Random; }
+
   public MoveResultDto GenerateMove(MakeMoveDto dto)
   {
     return GenerateRandomMove(dto);

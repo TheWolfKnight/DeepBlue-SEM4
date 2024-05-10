@@ -1,6 +1,7 @@
 
 using Dapr;
 using Dapr.Client;
+using DeepBlue.Api.Engine.Enums;
 using DeepBlue.Api.Engine.Services.Interfaces;
 using DeepBlue.Shared.Models.Dtos;
 using Microsoft.AspNetCore.Cors;
@@ -17,10 +18,10 @@ public class GenerateMoveController : ControllerBase
   private readonly DaprClient _client;
   private readonly IMoveGeneratorService _moveGenerator;
 
-  public GenerateMoveController(IMoveGeneratorService moveGenerator)
+  public GenerateMoveController(IMoveGeneratorFactory factory)
   {
     _client = new DaprClientBuilder().Build();
-    _moveGenerator = moveGenerator;
+    _moveGenerator = factory.GetMoveGeneratorService(GeneratorTypes.Random);
   }
 
   [HttpPost]

@@ -28,7 +28,10 @@ builder.Services.AddDaprClient(builder =>
          .UseGrpcEndpoint($"http://localhost:{grpcPort}")
 );
 
-builder.Services.AddScoped<IMoveGeneratorService, MoveGeneratorService>();
+builder.Services.AddScoped<IMoveGeneratorFactory, MoveGeneratorFactory>();
+
+builder.Services.AddScoped<IMoveGeneratorService, RandomMoveGeneratorService>();
+builder.Services.AddScoped<IMoveGeneratorService, MinMaxMoveGenerator>();
 
 WebApplication app = builder.Build();
 
