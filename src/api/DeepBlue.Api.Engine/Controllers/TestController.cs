@@ -35,7 +35,7 @@ public class TestController : ControllerBase
 
   [Topic("pubsub", "count-moves-test")]
   [HttpPost("/count-test")]
-  public async Task CountMovesTest(MakeMoveDto dto)
+  public async Task CountMovesTest(CountMovesDto dto)
   {
     if (_moveGenerator is MinMaxMoveGenerator minMax)
       minMax.CountMoves(dto);

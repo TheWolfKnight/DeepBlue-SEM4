@@ -9,5 +9,5 @@ public interface ITestHubConnection : IAsyncDisposable
   Task SendMessageAsync(string message);
   Task TestThroughputAsync(string message);
 
-  Task CountMovesTest(MakeMoveDto dto);
+  Task CountMovesTest(CountMovesDto dto);
 }

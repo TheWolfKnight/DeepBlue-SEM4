@@ -6,11 +6,15 @@ namespace DeepBlue.Api.Engine.Models;
 
 public class Move
 {
+  public bool MoveIsValid = true;
+
   public required PieceBase Piece;
   public PieceBase CapturedPiece = new EmptyPiece();
 
   public required Point From;
   public required Point To;
+
+  public int MoveScore { get; set; }
 
   public override string ToString()
   {

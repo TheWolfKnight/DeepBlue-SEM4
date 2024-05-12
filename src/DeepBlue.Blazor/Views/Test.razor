@@ -30,6 +30,6 @@
 
     async Task CountTestAsync()
     {
-      await HubConnection.CountMovesTest(new MakeMoveDto { FENString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", ConnectionId = "" });
+      await HubConnection.CountMovesTest(new CountMovesDto { FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", Depth = 2 });
   }
 }

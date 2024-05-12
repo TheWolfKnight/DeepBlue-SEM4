@@ -27,12 +27,13 @@ public class Board
     BoardState[move.To.Y][move.To.X] = move.Piece;
     BoardState[move.From.Y][move.From.X] = new EmptyPiece();
 
-    CurrentFEN = FENHelpers.ConvertGameToFEN(BoardState, MoveingSet);
 
     move.Piece.MadeMove();
 
     move.Piece.Position = [move.To.X, move.To.Y];
     MoveingSet = MoveingSet is Sets.White ? Sets.Black : Sets.White;
+
+    CurrentFEN = FENHelpers.ConvertGameToFEN(BoardState, MoveingSet);
   }
 
   public void UnmakeMove(Move move)
@@ -40,10 +41,10 @@ public class Board
     BoardState[move.From.Y][move.From.X] = move.Piece;
     BoardState[move.To.Y][move.To.X] = move.CapturedPiece;
 
-    CurrentFEN = FENHelpers.ConvertGameToFEN(BoardState, MoveingSet);
-
     move.Piece.Position = [move.From.X, move.From.Y];
     MoveingSet = MoveingSet is Sets.White ? Sets.Black : Sets.White;
+
+    CurrentFEN = FENHelpers.ConvertGameToFEN(BoardState, MoveingSet);
   }
 
   private void GenerateAttakcs()
