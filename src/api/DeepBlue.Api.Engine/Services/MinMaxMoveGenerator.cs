@@ -1,4 +1,5 @@
 
+using System.ComponentModel.DataAnnotations;
 using System.Net.WebSockets;
 using DeepBlue.Api.Engine.Enums;
 using DeepBlue.Api.Engine.Models;
@@ -7,6 +8,7 @@ using DeepBlue.Shared.Enums;
 using DeepBlue.Shared.Models;
 using DeepBlue.Shared.Models.Dtos;
 using DeepBlue.Shared.Models.Pieces;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace DeepBlue.Api.Engine.Services;
 
@@ -19,11 +21,18 @@ public class MinMaxMoveGenerator : IMoveGeneratorService
   private int _bestEvaluationThisIteration;
   private Move _bestMoveThisIteration = new Move { From = new(-1, -1), To = new(-1, -1), Piece = new EmptyPiece(), MoveIsValid = false };
 
+  private const int _instantCheckmateScore = 100_000;
+  private const int _positiveInfinite = 9_999_999;
+  private const int _negativeInfinite = -_positiveInfinite;
+
   public MoveResultDto GenerateMove(MakeMoveDto dto)
   {
     _board = new Board(dto.FENString);
 
-    int score = Search(4);
+    //NOTE: control the search depth
+    int depth = 5;
+
+    int score = Search(depth, 0, _negativeInfinite, _positiveInfinite);
     if (_bestMoveThisIteration.MoveIsValid)
       _board.MakeMove(_bestMoveThisIteration);
 
@@ -62,10 +71,10 @@ public class MinMaxMoveGenerator : IMoveGeneratorService
     return piece switch
     {
       KingPiece => 0,
-      QueenPiece => 9,
-      RookPiece => 5,
-      BishopPiece or KnightPiece => 3,
-      PawnPiece => 1,
+      QueenPiece => 900,
+      RookPiece => 500,
+      BishopPiece or KnightPiece => 300,
+      PawnPiece => 100,
       _ => throw new Exception("Unrechable code"),
     };
   }
@@ -97,56 +106,100 @@ public class MinMaxMoveGenerator : IMoveGeneratorService
     return moveCount;
   }
 
-  private int Search(int depth, int distFromRoot = 0, int alpha = int.MinValue, int beta = int.MaxValue)
+  private int Search(int depth, int distFromRoot, int alpha, int beta)
   {
     if (_board is null)
-      throw new InvalidOperationException("The board should not be null at this state, Unrechable code");
+      throw new InvalidOperationException();
 
     if (depth is 0)
-      return EvaluateBoardState();
+      return EvaluateBoard();
 
     IEnumerable<Move> moves = GenerateAvaliableMoves();
-    //TODO: check for checkmate
+    //NOTE: try to guess which moves are good, and put them up front to save time
+    moves = PredictGoodMoves(moves);
 
-    if (moves.Count() is 0)
-      return 0; //NOTE: Stalemate
+    if (IsCheckmate())
+    {
+      //NOTE: can be controlled to make distant checkmates more important
+      int correction = 1;
+      int checkMateScore = _instantCheckmateScore - (correction * (depth - distFromRoot));
+      return -checkMateScore;
+    }
 
+    //NOTE: is stalemate
+    if (!moves.Any())
+      return 0;
 
     foreach (Move move in moves)
     {
-      //NOTE: makes move on board
+      //NOTE: Make the move on the board
       _board.MakeMove(move);
-
-      //NOTE: searches the new position for best move.
-      //      alpha/beta is now seen from opponants side
-      int evaluation = -Search(depth - 1, distFromRoot++, -alpha, -beta);
-
-      //NOTE: removes the move from the board, to make ready for the next check
+      //NOTE:_evaluate this new position, seen from the other sets perspective
+      int evaluation = -Search(depth - 1, distFromRoot + 1, -beta, -alpha);
+      //NOTE: unmake the board, to its original state
       _board.UnmakeMove(move);
 
-      //NOTE: in this case, the move was so good that the opponant will not allow this position
-      //      therefor it can be skipped
+      //NOTE: if the move is better than the beta, it is too good and the opponant will avoid it
       if (evaluation >= beta)
         return beta;
 
-      Console.WriteLine("=== Evaluation is " + evaluation);
-      Console.WriteLine("=== alpha is " + alpha);
-      Console.WriteLine("=== alpha is less than eval " + (evaluation > alpha));
-
-      //NOTE: this is the new best move
-      if (evaluation > alpha && distFromRoot is 0)
+      //NOTE: if it is better than alpha, it will become the new alpha
+      if (evaluation > alpha)
       {
-        _bestEvaluationThisIteration = evaluation;
-        _bestMoveThisIteration = move;
         alpha = evaluation;
+
+        //NOTE: the new best move has been found
+        if (distFromRoot is 0)
+        {
+          _bestEvaluationThisIteration = evaluation;
+          _bestMoveThisIteration = move;
+        }
       }
     }
 
     return alpha;
   }
 
+  /// <summary>
+  /// Calaculate the value of the current board
+  /// </summary>
+  /// <returns> An integer representing the current board state </returns>
+  /// <exception cref="InvalidOperationException"></exception>
+  private int EvaluateBoard()
+  {
+    if (_board is null)
+      throw new InvalidOperationException();
+
+    Func<PieceBase, Sets, int> pieceValue = (PieceBase piece, Sets setToBeCounted) =>
+    {
+      if (piece is EmptyPiece || piece.PieceSet != setToBeCounted)
+        return 0;
+      return GetPieceValue(piece);
+    };
+
+    int whiteEval = _board.BoardState.Sum(rank =>
+    {
+      Func<PieceBase, int> selector = piece => pieceValue(piece, Sets.White);
+      return rank.Sum(selector);
+    });
+
+    int blackEval = _board.BoardState.Sum(rank =>
+    {
+      Func<PieceBase, int> selector = piece => pieceValue(piece, Sets.Black);
+      return rank.Sum(selector);
+    });
+
+    int eval = whiteEval - blackEval;
+    int perspective = _board.MoveingSet is Sets.White ? 1 : -1;
+
+    return eval * perspective;
+  }
+
+  private record MoveOrder(Move Move, int Weight);
   private IEnumerable<Move> PredictGoodMoves(IEnumerable<Move> generatedMoves)
   {
+    List<MoveOrder> weighedMoves = new List<MoveOrder>();
+
     foreach (Move move in generatedMoves)
     {
       int moveScoreGuess = 0;
@@ -154,32 +207,13 @@ public class MinMaxMoveGenerator : IMoveGeneratorService
       //NOTE: score a move better, if you can capture a higher value piece
       if (move.CapturedPiece is not null)
         moveScoreGuess = 10 * GetPieceValue(move.CapturedPiece) - GetPieceValue(move.Piece);
+
+      weighedMoves.Add(new MoveOrder(move, moveScoreGuess));
     }
-    throw new NotImplementedException();
-  }
 
-  private int EvaluateBoardState()
-  {
-    if (_board is null)
-      throw new InvalidOperationException("The board should not be null at this state, Unrechable code");
-
-    IList<IList<PieceBase>> boardState = _board.BoardState;
-
-    Func<PieceBase, Sets, int> pieceValue = (PieceBase piece, Sets setToBeCounted) =>
-    {
-      if (piece is EmptyPiece || piece.PieceSet == setToBeCounted)
-        return 0;
-      return GetPieceValue(piece);
-    };
-
-    int blackMaterialWeight = boardState.Sum(rank => rank.Sum(piece => pieceValue(piece, Sets.Black)));
-    int whiteMaterialWeight = boardState.Sum(rank => rank.Sum(piece => pieceValue(piece, Sets.White)));
-
-    int eval = whiteMaterialWeight - blackMaterialWeight;
-
-    int perspective = _board.MoveingSet is Sets.White ? 1 : -1;
-
-    return eval * perspective;
+    return weighedMoves
+      .OrderByDescending(move => move.Weight)
+      .Select(move => move.Move);
   }
 
   private IEnumerable<Move> GenerateAvaliableMoves()
@@ -203,6 +237,11 @@ public class MinMaxMoveGenerator : IMoveGeneratorService
     return results;
   }
 
+  /// <summary>
+  /// For the purpose of this project, a checkmate is when the king is dead
+  /// </summary>
+  /// <returns> True if king dead, else false </returns>
+  /// <exception cref="InvalidOperationException"></exception>
   private bool IsCheckmate()
   {
     if (_board is null)
